@@ -1,0 +1,21 @@
+-- ==============================================================================
+-- BhaktiMania — Phase I3: Grant Table Mutation Privileges on Categories
+-- ==============================================================================
+-- Grants table-level INSERT, UPDATE, DELETE privileges on public.categories to
+-- the authenticated API role so PostgREST can execute mutations.
+--
+-- Security Guarantee:
+-- The Row Level Security (RLS) policy defined in Phase C:
+--   CREATE POLICY "Admins have full access to categories"
+--       ON public.categories FOR ALL
+--       TO authenticated
+--       USING (public.is_admin())
+--       WITH CHECK (public.is_admin());
+-- strictly ensures that ONLY authenticated users with the 'admin' role in
+-- public.user_roles can insert, update, or delete categories.
+--
+-- Anonymous (public) users retain SELECT privileges only on active categories
+-- (is_active = true).
+-- ==============================================================================
+
+GRANT INSERT, UPDATE, DELETE ON public.categories TO authenticated;

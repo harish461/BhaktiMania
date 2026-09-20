@@ -1,0 +1,26 @@
+-- ==============================================================================
+-- BhaktiMania — Phase I5: Grant Table Mutation Privileges on Authors
+-- Scope: Least-privilege mutation grant for admin author management.
+-- Privileges: INSERT, UPDATE (Zero DELETE privilege)
+-- ==============================================================================
+-- Grants table-level INSERT and UPDATE privileges on public.authors to
+-- the authenticated API role so PostgREST can execute author mutations.
+--
+-- Security Guarantee:
+-- The Row Level Security (RLS) policy defined in Phase C:
+--   CREATE POLICY "Admins have full access to authors"
+--       ON public.authors FOR ALL
+--       TO authenticated
+--       USING (public.is_admin())
+--       WITH CHECK (public.is_admin());
+-- strictly ensures that ONLY authenticated users with the 'admin' role in
+-- public.user_roles can insert or update authors.
+--
+-- Least-Privilege & Relational Safety:
+-- DELETE privilege is intentionally NOT granted. Authors are relationally linked
+-- to articles (articles.author_id) and must never be deleted at runtime.
+-- Anonymous (public) users retain SELECT privileges only on active authors
+-- (is_active = true).
+-- ==============================================================================
+
+GRANT INSERT, UPDATE ON public.authors TO authenticated;
