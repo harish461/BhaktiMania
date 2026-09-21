@@ -51,6 +51,9 @@ export const metadata: Metadata = {
         },
       }
     : {}),
+  other: {
+    "google-adsense-account": process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID || "ca-pub-3380573668907472",
+  },
 };
 
 export default function RootLayout({
