@@ -41,6 +41,29 @@ export function CategoryPage({
     ],
   };
 
+  const collectionPageJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: category.title,
+    description: category.description,
+    url: categoryUrl,
+    inLanguage: "hi",
+    ...(articles.length > 0
+      ? {
+          mainEntity: {
+            "@type": "ItemList",
+            numberOfItems: articles.length,
+            itemListElement: articles.map((article, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              name: article.title,
+              url: getCanonicalUrl(`/bhakti-gyaan/${article.slug}`),
+            })),
+          },
+        }
+      : {}),
+  };
+
   const showEditorialNotice = articles.length < 3;
 
   return (
@@ -49,6 +72,11 @@ export function CategoryPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      {/* Schema.org CollectionPage structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageJsonLd) }}
       />
 
       <Header />
