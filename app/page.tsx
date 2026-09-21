@@ -12,6 +12,7 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: siteConfig.name,
+    url: siteConfig.url || "https://bhaktimania.com",
     description: siteConfig.tagline,
     inLanguage: "hi",
   };

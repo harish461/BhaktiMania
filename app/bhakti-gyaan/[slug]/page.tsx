@@ -70,24 +70,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       type: "article",
       locale: siteConfig.locale,
       siteName: siteConfig.name,
-      ...(article.featuredImageUrl
-        ? {
-            images: [
-              {
-                url: article.featuredImageUrl,
-                alt: article.featuredImageAlt || title,
-              },
-            ],
-          }
-        : {}),
+      images: [
+        {
+          url: article.featuredImageUrl || "https://bhaktimania.com/images/og-default.webp",
+          alt: article.featuredImageAlt || title,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: `${title} | BhaktiMania`,
       description,
-      ...(article.featuredImageUrl
-        ? { images: [article.featuredImageUrl] }
-        : {}),
+      images: [article.featuredImageUrl || "https://bhaktimania.com/images/og-default.webp"],
     },
   };
 }
@@ -176,7 +170,13 @@ export default async function ArticleDetailPage({ params }: PageProps) {
 
   const pageUrl =
     getCanonicalUrl(`/bhakti-gyaan/${article.slug}`) ||
-    `/bhakti-gyaan/${article.slug}`;
+    `https://bhaktimania.com/bhakti-gyaan/${article.slug}`;
+
+  const articleImageUrl = article.featuredImageUrl
+    ? (article.featuredImageUrl.startsWith("http")
+        ? article.featuredImageUrl
+        : `https://bhaktimania.com${article.featuredImageUrl.startsWith("/") ? "" : "/"}${article.featuredImageUrl}`)
+    : "https://bhaktimania.com/images/og-default.webp";
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -186,13 +186,13 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         "@type": "ListItem",
         position: 1,
         name: "होम",
-        item: getCanonicalUrl("/") || "/",
+        item: getCanonicalUrl("/") || "https://bhaktimania.com/",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "भक्ति ज्ञान",
-        item: getCanonicalUrl("/bhakti-gyaan") || "/bhakti-gyaan",
+        item: getCanonicalUrl("/bhakti-gyaan") || "https://bhaktimania.com/bhakti-gyaan",
       },
       {
         "@type": "ListItem",
@@ -213,14 +213,23 @@ export default async function ArticleDetailPage({ params }: PageProps) {
       "@type": "WebPage",
       "@id": pageUrl,
     },
+    image: [articleImageUrl],
     publisher: {
       "@type": "Organization",
       name: siteConfig.name,
+      logo: {
+        "@type": "ImageObject",
+        url: "https://bhaktimania.com/images/og-default.webp",
+      },
     },
     author: {
       "@type": "Organization",
       name: article.author || siteConfig.name,
     },
+    ...(article.publishedAtIso ? { datePublished: article.publishedAtIso } : {}),
+    ...(article.updatedAtIso || article.publishedAtIso
+      ? { dateModified: article.updatedAtIso || article.publishedAtIso }
+      : {}),
   };
 
   return (

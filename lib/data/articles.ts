@@ -14,6 +14,8 @@ export type Article = {
   symbol: string;
   readTime: string;
   publishedAt: string;
+  publishedAtIso?: string;
+  updatedAtIso?: string;
   author?: string;
   featuredImageUrl?: string | null;
   featuredImageAlt?: string | null;
@@ -31,6 +33,8 @@ export const articlesData: Article[] = [
     symbol: "दीप",
     readTime: "6 मिनट",
     publishedAt: "18 मार्च 2026",
+    publishedAtIso: "2026-03-18T00:00:00+05:30",
+    updatedAtIso: "2026-03-18T00:00:00+05:30",
     sections: [
       {
         heading: "भक्ति का वास्तविक और सरल अर्थ",
@@ -94,6 +98,8 @@ export const articlesData: Article[] = [
     symbol: "मोरपंख",
     readTime: "6 मिनट",
     publishedAt: "17 मार्च 2026",
+    publishedAtIso: "2026-03-17T00:00:00+05:30",
+    updatedAtIso: "2026-03-17T00:00:00+05:30",
     author: "BhaktiMania Editorial Team",
     sections: [
       {
@@ -171,6 +177,8 @@ export const articlesData: Article[] = [
     symbol: "गदा",
     readTime: "5 मिनट",
     publishedAt: "16 मार्च 2026",
+    publishedAtIso: "2026-03-16T00:00:00+05:30",
+    updatedAtIso: "2026-03-16T00:00:00+05:30",
     sections: [
       {
         heading: "दास्य भाव और समर्पण की पराकाष्ठा",
@@ -212,6 +220,8 @@ export const articlesData: Article[] = [
     symbol: "गीता",
     readTime: "6 मिनट",
     publishedAt: "15 मार्च 2026",
+    publishedAtIso: "2026-03-15T00:00:00+05:30",
+    updatedAtIso: "2026-03-15T00:00:00+05:30",
     sections: [
       {
         heading: "गीता: जीवन जीने का व्यावहारिक दर्शन",
@@ -243,6 +253,8 @@ export const articlesData: Article[] = [
     symbol: "त्रिशूल",
     readTime: "6 मिनट",
     publishedAt: "14 मार्च 2026",
+    publishedAtIso: "2026-03-14T00:00:00+05:30",
+    updatedAtIso: "2026-03-14T00:00:00+05:30",
     author: "BhaktiMania Editorial Team",
     sections: [
       {
@@ -331,6 +343,8 @@ export const articlesData: Article[] = [
     symbol: "तुलसी",
     readTime: "6 मिनट",
     publishedAt: "13 मार्च 2026",
+    publishedAtIso: "2026-03-13T00:00:00+05:30",
+    updatedAtIso: "2026-03-13T00:00:00+05:30",
     author: "BhaktiMania Editorial Team",
     sections: [
       {
@@ -409,6 +423,8 @@ export const articlesData: Article[] = [
     symbol: "धाम",
     readTime: "6 मिनट",
     publishedAt: "12 मार्च 2026",
+    publishedAtIso: "2026-03-12T00:00:00+05:30",
+    updatedAtIso: "2026-03-12T00:00:00+05:30",
     author: "BhaktiMania Editorial Team",
     sections: [
       {
@@ -493,6 +509,8 @@ export const articlesData: Article[] = [
     symbol: "कमल",
     readTime: "4 मिनट",
     publishedAt: "11 मार्च 2026",
+    publishedAtIso: "2026-03-11T00:00:00+05:30",
+    updatedAtIso: "2026-03-11T00:00:00+05:30",
     sections: [
       {
         heading: "आंतरिक शांति का स्रोत",
@@ -512,6 +530,8 @@ export const articlesData: Article[] = [
     symbol: "मुरली",
     readTime: "6 मिनट",
     publishedAt: "10 मार्च 2026",
+    publishedAtIso: "2026-03-10T00:00:00+05:30",
+    updatedAtIso: "2026-03-10T00:00:00+05:30",
     author: "BhaktiMania Editorial Team",
     sections: [
       {
@@ -594,6 +614,8 @@ export const articlesData: Article[] = [
     symbol: "गदा",
     readTime: "6 मिनट",
     publishedAt: "9 मार्च 2026",
+    publishedAtIso: "2026-03-09T00:00:00+05:30",
+    updatedAtIso: "2026-03-09T00:00:00+05:30",
     author: "BhaktiMania Editorial Team",
     sections: [
       {
@@ -671,6 +693,8 @@ export const articlesData: Article[] = [
     symbol: "गदा",
     readTime: "7 मिनट",
     publishedAt: "19 मार्च 2026",
+    publishedAtIso: "2026-03-19T00:00:00+05:30",
+    updatedAtIso: "2026-03-19T00:00:00+05:30",
     author: "BhaktiMania Editorial Team",
     sections: [
       {
@@ -782,6 +806,8 @@ export const articlesData: Article[] = [
     symbol: "श्री राम",
     readTime: "7 मिनट",
     publishedAt: "20 मार्च 2026",
+    publishedAtIso: "2026-03-20T00:00:00+05:30",
+    updatedAtIso: "2026-03-20T00:00:00+05:30",
     author: "BhaktiMania Editorial Team",
     sections: [
       {
@@ -874,6 +900,8 @@ export const articlesData: Article[] = [
     symbol: "त्रिशूल",
     readTime: "5 मिनट",
     publishedAt: "21 मार्च 2026",
+    publishedAtIso: "2026-03-21T00:00:00+05:30",
+    updatedAtIso: "2026-03-21T00:00:00+05:30",
     author: "BhaktiMania Editorial Team",
     sections: [
       {
@@ -953,6 +981,8 @@ export const articlesData: Article[] = [
     symbol: "गीता",
     readTime: "6 मिनट",
     publishedAt: "22 मार्च 2026",
+    publishedAtIso: "2026-03-22T00:00:00+05:30",
+    updatedAtIso: "2026-03-22T00:00:00+05:30",
     author: "BhaktiMania Editorial Team",
     sections: [
       {
@@ -1033,6 +1063,8 @@ export const articlesData: Article[] = [
     symbol: "तुलसी",
     readTime: "6 मिनट",
     publishedAt: "23 मार्च 2026",
+    publishedAtIso: "2026-03-23T00:00:00+05:30",
+    updatedAtIso: "2026-03-23T00:00:00+05:30",
     author: "BhaktiMania Editorial Team",
     sections: [
       {
@@ -1119,6 +1151,8 @@ export const articlesData: Article[] = [
     symbol: "धाम",
     readTime: "7 मिनट",
     publishedAt: "24 मार्च 2026",
+    publishedAtIso: "2026-03-24T00:00:00+05:30",
+    updatedAtIso: "2026-03-24T00:00:00+05:30",
     author: "BhaktiMania Editorial Team",
     sections: [
       {
@@ -1203,6 +1237,8 @@ export const articlesData: Article[] = [
     symbol: "कमल",
     readTime: "5 मिनट",
     publishedAt: "25 मार्च 2026",
+    publishedAtIso: "2026-03-25T00:00:00+05:30",
+    updatedAtIso: "2026-03-25T00:00:00+05:30",
     author: "BhaktiMania Editorial Team",
     sections: [
       {
@@ -1262,6 +1298,8 @@ export const articlesData: Article[] = [
     symbol: "मोरपंख",
     readTime: "6 मिनट",
     publishedAt: "26 मार्च 2026",
+    publishedAtIso: "2026-03-26T00:00:00+05:30",
+    updatedAtIso: "2026-03-26T00:00:00+05:30",
     author: "BhaktiMania Editorial Team",
     sections: [
       {

@@ -120,5 +120,8 @@ export function mapDatabaseArticleToArticle(
     seoTitle: row.seo_title || undefined,
     seoDescription: row.seo_description || undefined,
     rawPublishedAt: row.published_at || undefined,
+    rawUpdatedAt: row.updated_at || undefined,
+    publishedAtIso: row.published_at || undefined,
+    updatedAtIso: row.updated_at || row.published_at || undefined,
   };
 }

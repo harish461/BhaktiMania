@@ -77,6 +77,7 @@ export interface SupabaseArticle extends Article {
   seoTitle?: string | null;
   seoDescription?: string | null;
   rawPublishedAt?: string | null;
+  rawUpdatedAt?: string | null;
 }
 
 /**
