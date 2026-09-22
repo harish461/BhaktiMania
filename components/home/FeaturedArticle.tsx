@@ -79,9 +79,9 @@ export function FeaturedArticle({ article }: FeaturedArticleProps = {}) {
           </div>
 
           {/* Right — Editorial article details */}
-          <div className="bg-white p-8 lg:p-10 xl:p-12 flex flex-col justify-center">
+          <div className="bg-white p-6 sm:p-8 lg:p-10 xl:p-12 flex flex-col justify-center">
             {/* Chapter marker / ornament */}
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-3 mb-5 sm:mb-6">
               <div className="w-6 h-0.5 bg-[#C89A3C]/50" aria-hidden="true" />
               <span className="font-ui text-[10px] font-semibold tracking-[0.12em] uppercase text-[#C89A3C]">
                 Feature Story
@@ -91,7 +91,7 @@ export function FeaturedArticle({ article }: FeaturedArticleProps = {}) {
             {/* Headline */}
             <h2
               id="featured-article-heading"
-              className="font-serif text-[#1C1C17] leading-snug mb-5"
+              className="font-serif text-[#1C1C17] leading-snug mb-4 sm:mb-5"
               style={{ fontSize: "clamp(1.375rem, 2.5vw, 1.875rem)", fontWeight: 600 }}
             >
               {title}
@@ -120,7 +120,7 @@ export function FeaturedArticle({ article }: FeaturedArticleProps = {}) {
             {/* CTA */}
             <Link
               href={slug}
-              className="inline-flex items-center gap-2 w-fit font-ui text-sm font-semibold text-[#C85A17] hover:text-[#A8440B] transition-colors duration-150 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] rounded"
+              className="inline-flex items-center gap-2 w-fit font-ui text-sm font-semibold text-[#C85A17] hover:text-[#A8440B] transition-colors duration-150 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] rounded min-h-[44px] py-2"
             >
               <span>Read Full Article</span>
               <span

@@ -1,9 +1,8 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
-// Hero + Bhakti Vichar
+// Hero
 import { Hero } from "@/components/home/Hero";
-import { DailyBhaktiThought } from "@/components/home/DailyBhaktiThought";
 
 // Featured editorial
 import { FeaturedArticle } from "@/components/home/FeaturedArticle";
@@ -14,17 +13,8 @@ import { DevotionalCategories } from "@/components/home/DevotionalCategories";
 // Latest articles
 import { LatestArticles } from "@/components/home/LatestArticles";
 
-// Immersive quote
-import { SpiritualQuoteSection } from "@/components/home/SpiritualQuoteSection";
-
-// Devotional stories
-import { DevotionalStories } from "@/components/home/DevotionalStories";
-
-// Festivals
-import { FestivalSection } from "@/components/home/FestivalSection";
-
-// Newsletter
-import { NewsletterSection } from "@/components/home/NewsletterSection";
+// Social media
+import { SocialMediaSection } from "@/components/home/SocialMediaSection";
 
 // Data
 import { getPublishedArticles, getCategories } from "@/lib/data/supabase";
@@ -69,29 +59,17 @@ export default async function Home() {
         {/* 1. Cinematic Hero */}
         <Hero />
 
-        {/* 2. Bhakti Vichar — daily devotional quote */}
-        <DailyBhaktiThought />
-
-        {/* 3. Featured Article — two-column editorial */}
+        {/* 2. Featured Article — two-column editorial */}
         <FeaturedArticle article={featuredArticle} />
 
-        {/* 4. Devotional Categories — 3×2 grid */}
-        <DevotionalCategories categories={categories} />
-
-        {/* 5. Latest Articles — 3-column cards */}
+        {/* 3. Latest Articles — 3-column cards */}
         <LatestArticles articles={articles} />
 
-        {/* 6. Immersive Spiritual Quote — full-width dark section */}
-        <SpiritualQuoteSection />
+        {/* 4. Social Media — YouTube Shorts + Facebook */}
+        <SocialMediaSection />
 
-        {/* 7. Devotional Stories — Dhruv, Prahlad, Sudama */}
-        <DevotionalStories />
-
-        {/* 8. Festival Section — 4-card upcoming festivals */}
-        <FestivalSection />
-
-        {/* 9. Newsletter Signup */}
-        <NewsletterSection />
+        {/* 5. Devotional Categories — 3×2 grid */}
+        <DevotionalCategories categories={categories} />
       </main>
 
       <Footer />

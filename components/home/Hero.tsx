@@ -70,10 +70,10 @@ export function Hero() {
           </p>
 
           {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-start gap-3.5">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 w-full sm:w-auto">
             <Link
               href="/bhakti-gyaan"
-              className="inline-flex items-center justify-center gap-2 h-12 px-7 font-ui text-[13px] font-semibold tracking-wide bg-[#C85A17] text-[#FBF8F0] border border-[rgba(200,154,60,0.4)] rounded hover:bg-[#A8440B] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89A3C]"
+              className="inline-flex items-center justify-center gap-2 h-12 px-7 font-ui text-[13px] font-semibold tracking-wide bg-[#C85A17] text-[#FBF8F0] border border-[rgba(200,154,60,0.4)] rounded hover:bg-[#A8440B] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89A3C] w-full sm:w-auto text-center"
             >
               Explore Bhakti Gyaan
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -81,8 +81,8 @@ export function Hero() {
               </svg>
             </Link>
             <Link
-              href="#daily-thought"
-              className="inline-flex items-center justify-center gap-2 h-12 px-7 font-ui text-[13px] font-semibold tracking-wide bg-transparent text-[#FBF8F0] border border-[rgba(200,154,60,0.5)] rounded hover:bg-[rgba(200,154,60,0.08)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89A3C]"
+              href="/bhakti-vichar"
+              className="inline-flex items-center justify-center gap-2 h-12 px-7 font-ui text-[13px] font-semibold tracking-wide bg-transparent text-[#FBF8F0] border border-[rgba(200,154,60,0.5)] rounded hover:bg-[rgba(200,154,60,0.08)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89A3C] w-full sm:w-auto text-center"
             >
               Today&apos;s Bhakti Vichar
             </Link>
@@ -90,7 +90,7 @@ export function Hero() {
         </div>
 
         {/* Bottom-right editorial caption */}
-        <div className="absolute bottom-8 right-0 container-desktop flex justify-end pointer-events-none" aria-hidden="true">
+        <div className="hidden sm:flex absolute bottom-8 right-0 container-desktop justify-end pointer-events-none" aria-hidden="true">
           <div className="text-right">
             <div className="font-ui text-[10px] tracking-[0.15em] uppercase text-[#C89A3C]/60 mb-0.5">
               Sacred Editorial

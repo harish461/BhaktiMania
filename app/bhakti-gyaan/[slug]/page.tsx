@@ -289,7 +289,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           </div>
 
           {/* H1 Article Title */}
-          <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl text-[#6B1724] tracking-tight leading-snug mb-4">
+          <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl text-[#6B1724] tracking-tight leading-snug mb-4 break-words">
             {article.title}
           </h1>
 
