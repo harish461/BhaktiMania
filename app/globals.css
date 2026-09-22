@@ -1,121 +1,233 @@
 @import "tailwindcss";
 
 @theme {
-  /* BhaktiMania Sacred Palette */
-  --color-cream: #FDFBF7;
-  --color-cream-warm: #F8F4EC;
-  --color-maroon: #6B1724;
-  --color-maroon-dark: #52111C;
-  --color-burgundy: #82182B;
-  --color-saffron: #D97706;
-  --color-gold: #C27803;
-  --color-charcoal: #1F2326;
-  --color-muted: #5A6065;
+  /* ══════════════════════════════════════════════════════════════════
+     Sacred Folio & Saffron Manuscript — Complete Design Token System
+  ══════════════════════════════════════════════════════════════════ */
+
+  /* Warm Ground Neutrals (65–70% of homepage) */
+  --color-ivory: #FBF8F0;
+  --color-cream: #F5EFE2;
+  --color-sandalwood: #EDE2CF;
+
+  /* Sacred Saffron (5–10% accent) */
+  --color-saffron: #C85A17;
+  --color-saffron-deep: #A8440B;
+  --color-saffron-glow: #E07026;
+
+  /* Antique Gold (3–5% accent) */
+  --color-gold: #C89A3C;
+  --color-gold-light: #D8B45A;
+
+  /* Temple Accent — use < 2% */
+  --color-sindoor: #8F2617;
+  --color-maroon: #751F2A;
+
+  /* Ink & Stone */
+  --color-charcoal: #252824;
+  --color-ink: #1C1C17;
+  --color-stone: #6B706A;
+  --color-outline: #8B7267;
+
+  /* Pure White surfaces (15–20%) */
   --color-surface: #FFFFFF;
-  --color-border-subtle: rgba(107, 23, 36, 0.1);
-  --color-border-warm: rgba(107, 23, 36, 0.18);
 
-  /* Typography */
+  /* Legacy tokens — keep inner pages from breaking */
+  --color-cream-warm: #F5EFE2;
+  --color-maroon-dark: #5C1525;
+  --color-burgundy: #751F2A;
+  --color-muted: #6B706A;
+
+  /* Typography — CSS vars set by Next.js font on <html> take precedence */
+  --font-display: var(--font-display), Georgia, serif;
+  --font-serif: var(--font-serif), 'Noto Serif', Georgia, serif;
+  --font-ui: var(--font-ui), system-ui, -apple-system, sans-serif;
+  /* Backward-compat aliases for existing inner pages */
   --font-heading: var(--font-heading), Georgia, serif;
-  --font-body: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: var(--font-body), system-ui, -apple-system, sans-serif;
 }
 
+/* ─── CSS Custom Properties (for direct var() usage in inline styles) ─── */
 :root {
-  --background: #FDFBF7;
-  --foreground: #1F2326;
+  --background: #FBF8F0;
+  --foreground: #1C1C17;
+
+  /* Named refs */
+  --c-ivory: #FBF8F0;
+  --c-cream: #F5EFE2;
+  --c-sandalwood: #EDE2CF;
+  --c-saffron: #C85A17;
+  --c-saffron-deep: #A8440B;
+  --c-gold: #C89A3C;
+  --c-gold-light: #D8B45A;
+  --c-sindoor: #8F2617;
+  --c-maroon: #751F2A;
+  --c-charcoal: #252824;
+  --c-ink: #1C1C17;
+  --c-stone: #6B706A;
+  --c-surface: #FFFFFF;
+
+  /* Semantic borders */
+  --border-stone: rgba(107, 112, 106, 0.18);
+  --border-gold: rgba(200, 154, 60, 0.35);
+  --border-gold-strong: rgba(200, 154, 60, 0.55);
+  --border-saffron: rgba(200, 90, 23, 0.25);
 }
+
+/* ══════════════════════════════════════════
+   Base
+══════════════════════════════════════════ */
 
 body {
-  background-color: #FDFBF7;
-  color: #1F2326;
+  background-color: #FBF8F0;
+  color: #1C1C17;
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.75;
 }
 
-/* Typography Hierarchy Utilities */
+/* ══════════════════════════════════════════
+   Typography Utility Classes
+══════════════════════════════════════════ */
+
+/* Large Hindi/Devanagari display (Hero H1) */
 .text-display {
+  font-family: var(--font-serif);
+  font-size: clamp(2.25rem, 4.5vw, 3.25rem);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+}
+
+/* English display headline (Playfair Display) */
+.text-display-en {
   font-family: var(--font-heading);
-  font-size: clamp(2.25rem, 5vw, 3.75rem);
-  line-height: 1.15;
+  font-size: clamp(2.25rem, 4vw, 3.25rem);
+  font-weight: 600;
+  line-height: 1.18;
   letter-spacing: -0.02em;
 }
 
 .text-h1 {
   font-family: var(--font-heading);
   font-size: clamp(1.875rem, 4vw, 3rem);
+  font-weight: 600;
   line-height: 1.2;
   letter-spacing: -0.015em;
 }
 
 .text-h2 {
   font-family: var(--font-heading);
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
-  line-height: 1.25;
+  font-size: clamp(1.5rem, 3vw, 2.375rem);
+  font-weight: 500;
+  line-height: 1.28;
   letter-spacing: -0.01em;
 }
 
+/* Section headings in Hindi — use serif Devanagari */
+.text-h2-serif {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 3vw, 2.375rem);
+  font-weight: 500;
+  line-height: 1.28;
+}
+
 .text-h3 {
-  font-family: var(--font-body);
+  font-family: var(--font-serif);
   font-weight: 600;
-  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
   line-height: 1.35;
 }
 
 .text-h4 {
-  font-family: var(--font-body);
+  font-family: var(--font-serif);
   font-weight: 600;
   font-size: 1.125rem;
   line-height: 1.45;
 }
 
+/* Devotional quote / Hindi prose */
+.text-quote {
+  font-family: var(--font-serif);
+  font-size: clamp(1.25rem, 2.5vw, 1.625rem);
+  line-height: 1.7;
+}
+
 .text-body-large {
-  font-family: var(--font-body);
-  font-size: 1.125rem;
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
   line-height: 1.8;
 }
 
 .text-body {
-  font-family: var(--font-body);
+  font-family: var(--font-serif);
   font-size: 1rem;
   line-height: 1.75;
 }
 
 .text-small {
-  font-family: var(--font-body);
+  font-family: var(--font-ui);
   font-size: 0.875rem;
   line-height: 1.6;
 }
 
 .text-caption {
-  font-family: var(--font-body);
+  font-family: var(--font-ui);
   font-size: 0.75rem;
   line-height: 1.5;
-  color: #5A6065;
+  color: #6B706A;
 }
 
-/* Layout Utilities */
+/* UI label — nav, buttons, metadata, timestamps */
+.label-ui {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Small metadata label */
+.label-meta {
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════
+   Layout
+══════════════════════════════════════════ */
+
 .container-desktop {
   width: 100%;
   max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .container-desktop {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 }
 
 @media (min-width: 1024px) {
   .container-desktop {
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .container-desktop {
+    padding-left: 4rem;
+    padding-right: 4rem;
   }
 }
 
@@ -135,7 +247,37 @@ body {
   }
 }
 
-/* Touch Accessibility */
+/* ══════════════════════════════════════════
+   Sacred Decorative Utilities
+══════════════════════════════════════════ */
+
+/* Antique gold hairline — used between sections */
+.gold-hairline {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(200, 154, 60, 0.5) 30%,
+    rgba(200, 154, 60, 0.7) 50%,
+    rgba(200, 154, 60, 0.5) 70%,
+    transparent 100%
+  );
+}
+
+/* Saffron accent dot */
+.accent-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #C85A17;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════
+   Touch Accessibility
+══════════════════════════════════════════ */
+
 .touch-target {
   min-height: 44px;
   min-width: 44px;

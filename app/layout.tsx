@@ -1,20 +1,53 @@
 import type { Metadata } from "next";
-import { Noto_Sans_Devanagari, Rozha_One } from "next/font/google";
+import {
+  Noto_Sans_Devanagari,
+  Playfair_Display,
+  Noto_Serif_Devanagari,
+  Plus_Jakarta_Sans,
+} from "next/font/google";
 import { siteConfig, getCanonicalUrl } from "@/lib/config/site";
 import { AdSenseScript } from "@/components/ads/AdSenseScript";
 import "./globals.css";
 
-const notoDevanagari = Noto_Sans_Devanagari({
-  variable: "--font-body",
-  subsets: ["devanagari", "latin"],
+/* ─────────────────────────────────────────────────────────────────────────────
+   Font Strategy — Sacred Folio & Saffron Manuscript
+   
+   --font-heading  → Playfair Display (display headlines, English editorial)
+   --font-serif    → Noto Serif Devanagari (Hindi body, quotes, editorial prose)
+   --font-ui       → Plus Jakarta Sans (nav, buttons, labels, metadata)
+   --font-body     → Noto Sans Devanagari (backward compat — existing inner pages)
+───────────────────────────────────────────────────────────────────────────── */
+
+/** Playfair Display — replaces Rozha One as the editorial headline font. */
+const playfairDisplay = Playfair_Display({
+  variable: "--font-heading",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+/** Noto Serif Devanagari — primary serif for Hindi body text & devotional quotes. */
+const notoSerifDevanagari = Noto_Serif_Devanagari({
+  variable: "--font-serif",
+  subsets: ["devanagari"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
-const rozhaOne = Rozha_One({
-  variable: "--font-heading",
+/** Plus Jakarta Sans — UI font: navigation, buttons, labels, timestamps. */
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-ui",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+/** Noto Sans Devanagari — backward compat for existing inner pages (--font-body). */
+const notoDevanagari = Noto_Sans_Devanagari({
+  variable: "--font-body",
   subsets: ["devanagari", "latin"],
-  weight: "400",
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -61,7 +94,9 @@ export const metadata: Metadata = {
       }
     : {}),
   other: {
-    "google-adsense-account": process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID || "ca-pub-3380573668907472",
+    "google-adsense-account":
+      process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID ||
+      "ca-pub-3380573668907472",
   },
 };
 
@@ -73,9 +108,9 @@ export default function RootLayout({
   return (
     <html
       lang="hi"
-      className={`${notoDevanagari.variable} ${rozhaOne.variable} h-full antialiased`}
+      className={`${playfairDisplay.variable} ${notoSerifDevanagari.variable} ${plusJakartaSans.variable} ${notoDevanagari.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#FDFBF7] text-[#1F2326] font-body">
+      <body className="min-h-full flex flex-col bg-[#FBF8F0] text-[#1C1C17] font-body">
         <AdSenseScript />
         {children}
       </body>

@@ -12,7 +12,7 @@ import {
 import { DeleteConfirmModal } from "@/components/admin/editor/DeleteConfirmModal";
 import { ArticleListHeader } from "./articles/ArticleListHeader";
 import { ArticleStats } from "./articles/ArticleStats";
-import { ArticleFilters, type SortOption } from "./articles/ArticleFilters";
+import { ArticleFilters, type SortOption, type ImageFilterOption } from "./articles/ArticleFilters";
 import { ArticleTable } from "./articles/ArticleTable";
 import { ArticleMobileCard } from "./articles/ArticleMobileCard";
 import { ArticleEmptyState } from "./articles/ArticleEmptyState";
@@ -34,6 +34,7 @@ export default function ArticleListClient({
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [featuredFilter, setFeaturedFilter] = useState("all");
+  const [imageFilter, setImageFilter] = useState<ImageFilterOption>("all");
   const [sortOption, setSortOption] = useState<SortOption>("updated_desc");
 
   // Lifecycle action states
@@ -49,8 +50,9 @@ export default function ArticleListClient({
     if (statusFilter !== "all") count += 1;
     if (categoryFilter !== "all") count += 1;
     if (featuredFilter !== "all") count += 1;
+    if (imageFilter !== "all") count += 1;
     return count;
-  }, [search, statusFilter, categoryFilter, featuredFilter]);
+  }, [search, statusFilter, categoryFilter, featuredFilter, imageFilter]);
 
   // Clear all filters
   const handleClearFilters = () => {
@@ -58,6 +60,7 @@ export default function ArticleListClient({
     setStatusFilter("all");
     setCategoryFilter("all");
     setFeaturedFilter("all");
+    setImageFilter("all");
   };
 
   // Filter and Sort in memory for immediate feedback
@@ -77,6 +80,14 @@ export default function ArticleListClient({
         return false;
       }
       if (featuredFilter === "not-featured" && art.featured) {
+        return false;
+      }
+      // Image filter (Requirement 7 & 12)
+      const hasImg = Boolean(art.featured_image_url && art.featured_image_url.trim().length > 0);
+      if (imageFilter === "available" && !hasImg) {
+        return false;
+      }
+      if (imageFilter === "missing" && hasImg) {
         return false;
       }
       // Search term (title & slug)
@@ -115,7 +126,7 @@ export default function ArticleListClient({
           return 0;
       }
     });
-  }, [articles, statusFilter, categoryFilter, featuredFilter, search, sortOption]);
+  }, [articles, statusFilter, categoryFilter, featuredFilter, imageFilter, search, sortOption]);
 
   // Publish Draft Action Handler
   const handlePublish = async (article: AdminArticleListItem) => {
@@ -249,7 +260,11 @@ export default function ArticleListClient({
       )}
 
       {/* 3. Summary / Stats Cards */}
-      <ArticleStats articles={articles} />
+      <ArticleStats
+        articles={articles}
+        activeImageFilter={imageFilter}
+        onSelectImageFilter={setImageFilter}
+      />
 
       {/* 4. Filter & Search Controls */}
       <ArticleFilters
@@ -261,6 +276,8 @@ export default function ArticleListClient({
         onCategoryChange={setCategoryFilter}
         featuredFilter={featuredFilter}
         onFeaturedChange={setFeaturedFilter}
+        imageFilter={imageFilter}
+        onImageFilterChange={setImageFilter}
         sortOption={sortOption}
         onSortChange={setSortOption}
         categories={categories}

@@ -351,14 +351,23 @@ export function ArticleDetailsCard({
 
         {/* Media / Featured Image */}
         <div className="md:col-span-2 pt-2 border-t border-[#6B1724]/8">
-          <FeaturedImageField
-            articleId={articleId}
-            featuredImageUrl={featuredImageUrl}
-            featuredImageAlt={featuredImageAlt}
-            onFeaturedImageUrlChange={onFeaturedImageUrlChange}
-            onFeaturedImageAltChange={onFeaturedImageAltChange}
-            onSaveDraftFirst={onSaveDraftFirst}
-          />
+          {(() => {
+            const selectedCategory = categories.find((c) => c.id === categoryId);
+            return (
+              <FeaturedImageField
+                articleId={articleId}
+                title={title}
+                categoryName={selectedCategory?.title || ""}
+                categorySlug={selectedCategory?.slug || ""}
+                description={description}
+                featuredImageUrl={featuredImageUrl}
+                featuredImageAlt={featuredImageAlt}
+                onFeaturedImageUrlChange={onFeaturedImageUrlChange}
+                onFeaturedImageAltChange={onFeaturedImageAltChange}
+                onSaveDraftFirst={onSaveDraftFirst}
+              />
+            );
+          })()}
         </div>
       </div>
     </div>

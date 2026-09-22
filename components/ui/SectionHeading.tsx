@@ -6,6 +6,8 @@ export interface SectionHeadingProps extends React.HTMLAttributes<HTMLDivElement
   description?: string;
   align?: "left" | "center";
   accentLine?: boolean;
+  /** Use "serif" for Hindi headings, "display" for English editorial headings */
+  fontStyle?: "serif" | "display";
 }
 
 export function SectionHeading({
@@ -14,35 +16,40 @@ export function SectionHeading({
   description,
   align = "left",
   accentLine = true,
+  fontStyle = "display",
   className = "",
   ...props
 }: SectionHeadingProps) {
   const isCenter = align === "center";
+  const headingClass =
+    fontStyle === "serif"
+      ? "text-h2-serif text-[#252824]"
+      : "text-h2 text-[#252824]";
 
   return (
     <div
-      className={`mb-6 sm:mb-8 ${
+      className={`mb-8 sm:mb-10 ${
         isCenter ? "text-center flex flex-col items-center" : "text-left"
       } ${className}`}
       {...props}
     >
       {kicker && (
-        <span className="text-xs sm:text-sm font-semibold tracking-wider text-[#D97706] uppercase mb-1.5 inline-block">
-          {kicker}
-        </span>
+        <div className={`flex items-center gap-2 mb-3 ${isCenter ? "justify-center" : ""}`}>
+          <span className="accent-dot" aria-hidden="true" />
+          <span className="label-ui text-[#C85A17]">{kicker}</span>
+        </div>
       )}
-      <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl text-[#6B1724] tracking-tight leading-snug">
-        {title}
-      </h2>
+      <h2 className={headingClass}>{title}</h2>
       {accentLine && (
         <div
-          className={`h-0.5 w-12 bg-[#D97706]/70 rounded-full mt-2.5 mb-2.5 ${
+          className={`h-0.5 w-10 bg-[#C89A3C]/60 rounded-full mt-3 mb-2 ${
             isCenter ? "mx-auto" : ""
           }`}
+          aria-hidden="true"
         />
       )}
       {description && (
-        <p className="text-[#5A6065] text-base sm:text-lg max-w-2xl mt-1.5 leading-relaxed">
+        <p className="text-[#6B706A] text-body max-w-2xl mt-2 leading-relaxed">
           {description}
         </p>
       )}

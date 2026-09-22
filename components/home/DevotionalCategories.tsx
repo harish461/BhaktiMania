@@ -1,13 +1,65 @@
 import React from "react";
 import Link from "next/link";
 
-export interface DevotionalCategoryItem {
-  id: string;
+/** Hardcoded 6 devotional categories per design spec */
+interface CategoryItem {
   title: string;
   description: string;
   route: string;
   symbol: string;
+  symbolLabel: string;
 }
+
+const categories: CategoryItem[] = [
+  {
+    title: "भगवान श्री कृष्ण",
+    description:
+      "श्री कृष्ण की लीलाएं, भागवत कथाएं और उनकी अमृत शिक्षाएं।",
+    route: "/radha-krishna",
+    symbol: "✦",
+    symbolLabel: "श्री कृष्ण",
+  },
+  {
+    title: "भगवान शिव",
+    description:
+      "महादेव के स्वरूप, शिव पुराण और 'ॐ नमः शिवाय' का आध्यात्मिक रहस्य।",
+    route: "/shiv",
+    symbol: "ॐ",
+    symbolLabel: "भगवान शिव",
+  },
+  {
+    title: "हनुमान जी",
+    description:
+      "हनुमान जी की भक्ति, हनुमान चालीसा और उनके जीवन की प्रेरणाएं।",
+    route: "/hanuman",
+    symbol: "✿",
+    symbolLabel: "हनुमान जी",
+  },
+  {
+    title: "राधा-कृष्ण प्रेम",
+    description:
+      "राधा-कृष्ण का दिव्य प्रेम, भक्ति रस और वृंदावन की आध्यात्मिक सुंदरता।",
+    route: "/radha-krishna",
+    symbol: "♡",
+    symbolLabel: "राधा कृष्ण",
+  },
+  {
+    title: "मंत्र एवं स्तोत्र",
+    description:
+      "वैदिक मंत्र, स्तोत्र, उनके उच्चारण और आध्यात्मिक प्रभाव।",
+    route: "/mantra-stotra",
+    symbol: "ᯓ",
+    symbolLabel: "मंत्र",
+  },
+  {
+    title: "आध्यात्मिक जीवन",
+    description:
+      "दैनिक भक्ति दिनचर्या, ध्यान, और जीवन में आध्यात्मिकता को अपनाना।",
+    route: "/bhakti-gyaan",
+    symbol: "☸",
+    symbolLabel: "आध्यात्मिक जीवन",
+  },
+];
 
 export interface DevotionalCategoriesProps {
   categories?: Array<{
@@ -18,105 +70,101 @@ export interface DevotionalCategoriesProps {
   }>;
 }
 
-export function DevotionalCategories({ categories: propCategories = [] }: DevotionalCategoriesProps = {}) {
-  const displayCategories: DevotionalCategoryItem[] = propCategories.map((cat) => ({
-    id: cat.slug,
-    title: cat.title,
-    description: cat.description,
-    route: `/${cat.slug}`,
-    symbol: cat.symbol,
-  }));
-
+export function DevotionalCategories({}: DevotionalCategoriesProps = {}) {
+  // Per design spec, show the 6 hardcoded categories with editorial icons
   return (
     <section
       id="devotional-categories"
       aria-labelledby="categories-heading"
-      className="py-14 sm:py-20 bg-[#F8F4EC] border-t border-[#6B1724]/8"
+      className="py-20 lg:py-28 bg-[#F5EFE2]"
     >
       <div className="container-desktop">
+
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#6B1724]/10 mb-3.5 shadow-xs">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#D97706]" aria-hidden="true" />
-            <span className="text-xs sm:text-sm font-semibold tracking-wider text-[#6B1724] uppercase font-body">
-              आध्यात्मिक संग्रह
-            </span>
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-3 mb-4">
+            <div className="w-8 h-px bg-[#C89A3C]/50" aria-hidden="true" />
+            <span className="label-ui text-[#C85A17]">आध्यात्मिक संग्रह</span>
+            <div className="w-8 h-px bg-[#C89A3C]/50" aria-hidden="true" />
           </div>
 
           <h2
             id="categories-heading"
-            className="font-heading text-3xl sm:text-4xl text-[#6B1724] tracking-tight leading-snug"
+            className="font-serif text-[#1C1C17] mb-3"
+            style={{
+              fontSize: "clamp(1.5rem, 3vw, 2.375rem)",
+              fontWeight: 500,
+            }}
           >
             भक्ति के प्रमुख विषय
           </h2>
 
-          {/* Saffron Accent Line */}
-          <div
-            className="h-0.5 w-12 bg-[#D97706]/70 rounded-full mx-auto my-3"
-            aria-hidden="true"
-          />
+          {/* Gold accent line */}
+          <div className="w-10 h-0.5 bg-[#C89A3C]/55 rounded-full mx-auto my-3" aria-hidden="true" />
 
-          <p className="text-[#5A6065] text-base sm:text-lg leading-relaxed font-body">
-            अपने पसंदीदा भक्ति विषय से जुड़ी कहानियां, विचार, ज्ञान और उपयोगी
-            जानकारी पढ़ें।
+          <p className="font-serif text-[#6B706A] leading-relaxed" style={{ fontSize: "1rem" }}>
+            अपने मन और आत्मा के लिए एक ऐसा विषय चुनें जो आज आपको प्रेरित करे।
           </p>
         </div>
 
-        {/* Categories Grid: 1 col (mobile xs), 2 cols (sm/tablet), 4 cols (desktop) */}
-        {displayCategories.length === 0 ? (
-          <div className="text-center py-12 px-4 rounded-2xl bg-white border border-[#6B1724]/10">
-            <p className="text-base text-[#5A6065] font-body">
-              श्रेणियां लोड करने में असमर्थ। कृपया कुछ समय पश्चात पुनः प्रयास करें।
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-            {displayCategories.map((category) => (
+        {/* 3 × 2 Category Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
+          {categories.map((category) => (
             <Link
-              key={category.id}
+              key={category.route + category.title}
               href={category.route}
-              className="group bg-white rounded-2xl p-5 sm:p-6 border border-[#6B1724]/10 shadow-[0_2px_10px_rgba(107,23,36,0.03)] hover:shadow-[0_8px_24px_rgba(107,23,36,0.07)] hover:border-[#6B1724]/25 transition-all duration-200 flex flex-col justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B1724] focus-visible:ring-offset-2"
+              className="group bg-white rounded-[6px] p-6 lg:p-7 border border-[rgba(107,112,106,0.18)] shadow-[0_2px_12px_-2px_rgba(40,25,15,0.05)] hover:shadow-[0_8px_28px_-4px_rgba(40,25,15,0.09)] hover:border-[rgba(200,154,60,0.35)] transition-all duration-200 flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] focus-visible:ring-offset-2"
+              aria-label={`${category.title} — ${category.symbolLabel}`}
             >
-              <div>
-                {/* Devotional Symbol Badge */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="h-11 px-3 min-w-[44px] rounded-xl bg-[#F8F4EC] border border-[#6B1724]/10 text-[#6B1724] group-hover:bg-[#6B1724] group-hover:text-white group-hover:border-[#6B1724] transition-all duration-200 flex items-center justify-center font-heading text-sm font-medium shadow-xs">
-                    <span className="select-none">{category.symbol}</span>
-                  </div>
-                  <span
-                    className="text-xs text-[#D97706] opacity-0 group-hover:opacity-100 transition-opacity duration-200 font-body"
-                    aria-hidden="true"
-                  >
-                    ✦
-                  </span>
+              {/* Icon + Arrow Row */}
+              <div className="flex items-center justify-between mb-5">
+                {/* Category icon badge */}
+                <div
+                  className="flex items-center justify-center w-11 h-11 rounded-[4px] border border-[rgba(200,154,60,0.3)] text-[#C89A3C] group-hover:bg-[#C85A17] group-hover:text-white group-hover:border-[#C85A17] transition-all duration-200 text-lg font-serif select-none"
+                  aria-hidden="true"
+                >
+                  {category.symbol}
                 </div>
-
-                {/* Category Title */}
-                <h3 className="font-heading text-xl text-[#1F2326] group-hover:text-[#6B1724] transition-colors leading-snug mb-2">
-                  {category.title}
-                </h3>
-
-                {/* Short Description */}
-                <p className="text-xs sm:text-sm text-[#5A6065] leading-relaxed line-clamp-2 font-body">
-                  {category.description}
-                </p>
-              </div>
-
-              {/* Action Indicator */}
-              <div className="pt-4 border-t border-[#6B1724]/6 mt-4 flex items-center justify-between text-xs sm:text-sm font-semibold text-[#6B1724] group-hover:text-[#52111C]">
-                <span>देखें</span>
+                {/* Arrow — reveals on hover */}
                 <span
-                  className="group-hover:translate-x-1 transition-transform duration-200"
+                  className="text-[#C89A3C] opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-200 text-sm"
                   aria-hidden="true"
                 >
                   →
                 </span>
               </div>
+
+              {/* Category title */}
+              <h3
+                className="font-serif text-[#1C1C17] group-hover:text-[#C85A17] transition-colors duration-200 mb-2.5 leading-snug"
+                style={{ fontSize: "1.125rem", fontWeight: 600 }}
+              >
+                {category.title}
+              </h3>
+
+              {/* Description */}
+              <p className="font-serif text-sm text-[#6B706A] leading-relaxed line-clamp-2 grow">
+                {category.description}
+              </p>
+
+              {/* Bottom link */}
+              <div className="mt-5 pt-4 border-t border-[rgba(107,112,106,0.12)] flex items-center justify-between">
+                <span className="font-ui text-xs font-semibold text-[#C85A17] group-hover:text-[#A8440B] transition-colors">
+                  अन्वेषण करें
+                </span>
+                <span
+                  className="font-ui text-xs text-[#C89A3C] group-hover:translate-x-0.5 transition-transform duration-200"
+                  aria-hidden="true"
+                >
+                  ✦
+                </span>
+              </div>
             </Link>
           ))}
-          </div>
-        )}
+        </div>
       </div>
     </section>
   );
 }
+
+export type { CategoryItem };

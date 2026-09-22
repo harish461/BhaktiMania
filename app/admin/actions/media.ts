@@ -299,3 +299,245 @@ export async function deleteFeaturedImageAction(
     message: "Featured image deleted successfully.",
   };
 }
+
+export interface GenerateAiImageResponse {
+  success: boolean;
+  candidate?: {
+    imageUrl: string;
+    prompt: string;
+    altText: string;
+    seed: number;
+  };
+  error?: string;
+}
+
+/**
+ * Server Action: Generates a topic-aware devotional AI image preview candidate.
+ * This does NOT save or commit to Supabase Storage until the user confirms.
+ */
+export async function generateAiImagePreviewAction(params: {
+  title: string;
+  category?: string;
+  categorySlug?: string;
+  description?: string;
+  seed?: number;
+}): Promise<GenerateAiImageResponse> {
+  const auth = await getCurrentAdmin();
+  if (!auth.isAuthenticated || !auth.isAdmin) {
+    return {
+      success: false,
+      error: "You must be an administrator to generate article artwork.",
+    };
+  }
+
+  if (!params.title || !params.title.trim()) {
+    return {
+      success: false,
+      error: "An article title is required to generate a relevant devotional image.",
+    };
+  }
+
+  try {
+    const { generateDevotionalImageCandidate } = await import("@/lib/ai/ai-image");
+    const candidate = generateDevotionalImageCandidate({
+      title: params.title,
+      category: params.category,
+      categorySlug: params.categorySlug,
+      description: params.description,
+      seed: params.seed,
+    });
+
+    return {
+      success: true,
+      candidate,
+    };
+  } catch (err: unknown) {
+    console.error("[actions/generateAiImagePreviewAction] Generation failed:", err);
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Failed to generate AI artwork preview.",
+    };
+  }
+}
+
+export interface ApplyAiImageResponse {
+  success: boolean;
+  imageUrl?: string;
+  altText?: string;
+  storagePath?: string;
+  cleanupWarning?: string;
+  error?: string;
+}
+
+/**
+ * Server Action: Commits an AI-generated preview image to Supabase Storage and attaches it to the article.
+ */
+export async function applyAiGeneratedImageAction(params: {
+  articleId: string;
+  imageUrl: string;
+  altText?: string;
+}): Promise<ApplyAiImageResponse> {
+  // 1. Authorize Admin
+  const auth = await getCurrentAdmin();
+  if (!auth.isAuthenticated || !auth.isAdmin) {
+    return {
+      success: false,
+      error: "You must be an administrator to save article artwork.",
+    };
+  }
+
+  // 2. Validate Article UUID
+  const cleanId = params.articleId?.trim() || "";
+  if (!cleanId || !isValidArticleId(cleanId)) {
+    return {
+      success: false,
+      error: "A valid saved article is required to store featured media.",
+    };
+  }
+
+  if (!params.imageUrl || !params.imageUrl.startsWith("http")) {
+    return {
+      success: false,
+      error: "A valid image URL is required to save artwork.",
+    };
+  }
+
+  const supabase = await createClient();
+
+  // 3. Verify Article Exists
+  const { data: article, error: articleErr } = await supabase
+    .from("articles")
+    .select("id, slug, status, featured_image_url")
+    .eq("id", cleanId)
+    .single();
+
+  if (articleErr || !article) {
+    return {
+      success: false,
+      error: "Article record not found. Please save the article draft first.",
+    };
+  }
+
+  try {
+    // 4. Download image buffer server-side
+    const response = await fetch(params.imageUrl);
+    if (!response.ok) {
+      return {
+        success: false,
+        error: `Failed to download candidate image from provider (HTTP ${response.status}).`,
+      };
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // 5. Validate Image Buffer
+    const validation = validateImageBuffer(buffer, "ai-devotional.jpg");
+    if (!validation.valid || !validation.extension) {
+      return {
+        success: false,
+        error: validation.error || "Generated artwork could not be validated.",
+      };
+    }
+
+    // 6. Generate Scoped Server-side Storage Path
+    const storagePath = generateFeaturedImagePath(cleanId, validation.extension);
+
+    // 7. Upload to Supabase Storage
+    const { error: uploadErr } = await supabase.storage
+      .from(MEDIA_BUCKET_NAME)
+      .upload(storagePath, buffer, {
+        contentType: validation.mimeType || "image/jpeg",
+        upsert: false,
+      });
+
+    if (uploadErr) {
+      console.error("[actions/useAiGeneratedImageAction] Storage upload failed:", uploadErr);
+      return {
+        success: false,
+        error: `Storage upload failed: ${uploadErr.message}`,
+      };
+    }
+
+    // 8. Confirm upload & get public URL
+    const { data: publicUrlData } = supabase.storage
+      .from(MEDIA_BUCKET_NAME)
+      .getPublicUrl(storagePath);
+
+    const permanentUrl = publicUrlData?.publicUrl;
+    if (!permanentUrl) {
+      await supabase.storage.from(MEDIA_BUCKET_NAME).remove([storagePath]);
+      return {
+        success: false,
+        error: "Failed to resolve public URL for stored artwork.",
+      };
+    }
+
+    // 9. Update database record
+    const oldImageUrl = article.featured_image_url;
+    const updatePayload: Record<string, unknown> = {
+      featured_image_url: permanentUrl,
+      updated_at: new Date().toISOString(),
+    };
+    if (params.altText && params.altText.trim()) {
+      updatePayload.featured_image_alt = params.altText.trim();
+    }
+
+    const { error: updateErr } = await supabase
+      .from("articles")
+      .update(updatePayload)
+      .eq("id", cleanId);
+
+    if (updateErr) {
+      console.error("[actions/useAiGeneratedImageAction] Database update failed:", updateErr);
+      await supabase.storage.from(MEDIA_BUCKET_NAME).remove([storagePath]);
+      return {
+        success: false,
+        error: `Database update failed: ${updateErr.message}.`,
+      };
+    }
+
+    // 10. Clean up old storage object if replacement
+    let cleanupWarning: string | undefined;
+    if (oldImageUrl && oldImageUrl !== permanentUrl) {
+      const oldPath = extractStoragePathFromUrl(oldImageUrl, MEDIA_BUCKET_NAME);
+      if (oldPath && isPathInArticleNamespace(cleanId, oldPath)) {
+        try {
+          const { error: cleanupErr } = await supabase.storage
+            .from(MEDIA_BUCKET_NAME)
+            .remove([oldPath]);
+
+          if (cleanupErr) {
+            cleanupWarning = `Artwork activated, but previous file cleanup warning: ${cleanupErr.message}`;
+          }
+        } catch {
+          cleanupWarning = "Artwork activated. Previous file cleanup was deferred.";
+        }
+      }
+    }
+
+    // 11. Revalidate paths
+    revalidatePath("/admin/articles");
+    revalidatePath(`/admin/articles/${cleanId}/edit`);
+    if (article.status === "published" && article.slug) {
+      revalidatePath(`/bhakti-gyaan/${article.slug}`);
+      revalidatePath("/bhakti-gyaan");
+      revalidatePath("/");
+    }
+
+    return {
+      success: true,
+      imageUrl: permanentUrl,
+      altText: params.altText,
+      storagePath,
+      cleanupWarning,
+    };
+  } catch (err: unknown) {
+    console.error("[actions/useAiGeneratedImageAction] Exception:", err);
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "An unexpected error occurred while storing artwork.",
+    };
+  }
+}
+

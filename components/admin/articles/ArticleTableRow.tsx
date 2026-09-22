@@ -36,22 +36,46 @@ export function ArticleTableRow({
   onDelete,
   isActionPending,
 }: ArticleTableRowProps) {
+  const hasImage = Boolean(article.featured_image_url && article.featured_image_url.trim().length > 0);
+
   return (
     <tr className="hover:bg-[#FDFBF7]/80 transition-colors group">
-      {/* Article: Title + Slug */}
-      <td className="px-6 py-4 max-w-sm">
-        <div className="space-y-1">
+      {/* Article: Thumbnail + Title + Slug */}
+      <td className="px-6 py-4 max-w-md">
+        <div className="flex items-center gap-3">
+          {/* Mini 16:9 Thumbnail */}
           <Link
             href={`/admin/articles/${article.id}/edit`}
-            className="line-clamp-2 font-heading font-semibold text-sm text-[#1F2326] group-hover:text-[#6B1724] transition-colors"
+            className="relative w-16 h-10 shrink-0 rounded-lg overflow-hidden bg-[#F8F4EC] border border-[#6B1724]/15 hover:opacity-90 transition-opacity flex items-center justify-center"
+            title={hasImage ? "Click to view or replace image" : "Image missing — click to generate"}
           >
-            {article.title}
+            {hasImage ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={article.featured_image_url!}
+                alt={article.featured_image_alt || article.title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center text-[10px] font-bold text-amber-700 bg-amber-50/90 border border-dashed border-amber-300">
+                <span>+ AI</span>
+              </div>
+            )}
           </Link>
-          <div className="flex items-center gap-1.5 text-xs text-[#5A6065] font-mono">
-            <span className="text-gray-400 select-none">/</span>
-            <span className="truncate max-w-[220px]" title={article.slug}>
-              {article.slug}
-            </span>
+
+          <div className="space-y-0.5 min-w-0">
+            <Link
+              href={`/admin/articles/${article.id}/edit`}
+              className="line-clamp-2 font-heading font-semibold text-sm text-[#1F2326] group-hover:text-[#6B1724] transition-colors"
+            >
+              {article.title}
+            </Link>
+            <div className="flex items-center gap-1.5 text-xs text-[#5A6065] font-mono">
+              <span className="text-gray-400 select-none">/</span>
+              <span className="truncate max-w-[200px]" title={article.slug}>
+                {article.slug}
+              </span>
+            </div>
           </div>
         </div>
       </td>
@@ -98,6 +122,20 @@ export function ArticleTableRow({
       {/* Actions */}
       <td className="px-6 py-4 text-right whitespace-nowrap">
         <div className="flex items-center justify-end gap-1.5">
+          {/* Quick AI Image Button */}
+          <Link
+            href={`/admin/articles/${article.id}/edit`}
+            className={`inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-semibold rounded-lg border transition-all cursor-pointer ${
+              hasImage
+                ? "text-[#5A6065] hover:text-[#6B1724] border-[#6B1724]/15 hover:border-[#6B1724]/30 bg-white"
+                : "text-[#B45309] hover:text-[#78350F] border-amber-300 bg-amber-50 hover:bg-amber-100 shadow-2xs font-bold"
+            }`}
+            title={hasImage ? "Regenerate AI Artwork" : "Generate Missing AI Artwork"}
+          >
+            <span className="text-amber-600">✦</span>
+            <span>{hasImage ? "Regen AI" : "Generate AI"}</span>
+          </Link>
+
           <Link
             href={`/admin/articles/${article.id}/edit`}
             className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold text-[#6B1724] hover:text-[#52111C] hover:bg-[#FDFBF7] rounded-lg border border-transparent hover:border-[#6B1724]/20 transition-all cursor-pointer"

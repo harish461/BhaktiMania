@@ -36,6 +36,8 @@ export function ArticleMobileCard({
   onDelete,
   isActionPending,
 }: ArticleMobileCardProps) {
+  const hasImage = Boolean(article.featured_image_url && article.featured_image_url.trim().length > 0);
+
   return (
     <article className="p-4 sm:p-5 space-y-3.5 bg-white transition-colors">
       {/* Top row: Status, Featured & Action Menu */}
@@ -62,17 +64,37 @@ export function ArticleMobileCard({
         />
       </div>
 
-      {/* Article Title & Slug */}
-      <div className="space-y-1">
+      {/* Article Thumbnail + Title & Slug */}
+      <div className="flex gap-3 items-start">
         <Link
           href={`/admin/articles/${article.id}/edit`}
-          className="block font-heading font-semibold text-base text-[#1F2326] active:text-[#6B1724] leading-snug"
+          className="relative w-20 aspect-[16/10] shrink-0 rounded-lg overflow-hidden bg-[#F8F4EC] border border-[#6B1724]/15 flex items-center justify-center"
         >
-          {article.title}
+          {hasImage ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={article.featured_image_url!}
+              alt={article.featured_image_alt || article.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center text-[10px] font-bold text-amber-700 bg-amber-50/90 border border-dashed border-amber-300">
+              <span>+ AI</span>
+            </div>
+          )}
         </Link>
-        <p className="text-xs text-[#5A6065] font-mono break-all">
-          /{article.slug}
-        </p>
+
+        <div className="space-y-1 min-w-0 flex-1">
+          <Link
+            href={`/admin/articles/${article.id}/edit`}
+            className="block font-heading font-semibold text-base text-[#1F2326] active:text-[#6B1724] leading-snug"
+          >
+            {article.title}
+          </Link>
+          <p className="text-xs text-[#5A6065] font-mono break-all">
+            /{article.slug}
+          </p>
+        </div>
       </div>
 
       {/* Meta Grid */}
@@ -95,11 +117,19 @@ export function ArticleMobileCard({
         </div>
       </div>
 
-      {/* Bottom Actions: Edit Link (>= 44px touch target) */}
-      <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
-        <span className="text-[11px] text-[#5A6065]">
-          Read time: {article.read_time || "5 मिनट"}
-        </span>
+      {/* Bottom Actions: Quick AI Image + Edit Link (>= 44px touch target) */}
+      <div className="pt-2 border-t border-gray-100 flex items-center justify-between gap-2 flex-wrap">
+        <Link
+          href={`/admin/articles/${article.id}/edit`}
+          className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
+            hasImage
+              ? "text-[#5A6065] border-[#6B1724]/15 bg-white hover:bg-gray-50"
+              : "text-[#B45309] border-amber-300 bg-amber-50 font-bold"
+          }`}
+        >
+          <span className="text-amber-600">✦</span>
+          <span>{hasImage ? "Regen AI Image" : "Generate AI Image"}</span>
+        </Link>
 
         <Link
           href={`/admin/articles/${article.id}/edit`}

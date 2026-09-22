@@ -1,27 +1,27 @@
 import React from "react";
 
-export type BadgeVariant = "maroon" | "saffron" | "gold" | "neutral";
+export type BadgeVariant = "saffron" | "gold" | "stone" | "maroon";
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
 }
 
 const badgeVariants: Record<BadgeVariant, string> = {
-  maroon: "bg-[#6B1724]/10 text-[#6B1724] border-[#6B1724]/15",
-  saffron: "bg-[#D97706]/10 text-[#D97706] border-[#D97706]/20",
-  gold: "bg-[#C27803]/10 text-[#C27803] border-[#C27803]/20",
-  neutral: "bg-[#F8F4EC] text-[#5A6065] border-[#6B1724]/10",
+  saffron: "bg-[#C85A17]/10 text-[#C85A17] border-[#C85A17]/20",
+  gold: "bg-[#C89A3C]/12 text-[#A8821E] border-[#C89A3C]/25",
+  stone: "bg-[#F5EFE2] text-[#6B706A] border-[rgba(107,112,106,0.2)]",
+  maroon: "bg-[#751F2A]/8 text-[#751F2A] border-[#751F2A]/15",
 };
 
 export function Badge({
   children,
-  variant = "maroon",
+  variant = "saffron",
   className = "",
   ...props
 }: BadgeProps) {
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border tracking-wide select-none ${badgeVariants[variant]} ${className}`}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-ui font-semibold border tracking-wide select-none ${badgeVariants[variant]} ${className}`}
       {...props}
     >
       {children}

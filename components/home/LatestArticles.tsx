@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Badge, BadgeVariant } from "@/components/ui/Badge";
 
@@ -9,10 +10,9 @@ interface ArticleItem {
   title: string;
   description: string;
   slug: string;
-  motif: string;
+  readTime: string;
+  imageUrl: string;
 }
-
-
 
 interface LatestArticlesProps {
   articles?: Array<{
@@ -22,129 +22,225 @@ interface LatestArticlesProps {
     category: string;
     categorySlug?: string;
     symbol: string;
+    readTime?: string;
+    featuredImageUrl?: string | null;
   }>;
 }
 
 const categoryBadgeMap: Record<string, BadgeVariant> = {
-  bhakti: "maroon",
-  "bhakti-vichar": "maroon",
-  "radha-krishna": "saffron",
-  hanuman: "gold",
-  "bhagavad-gita": "maroon",
-  shiv: "neutral",
-  festivals: "saffron",
+  bhakti: "saffron",
+  "bhakti-vichar": "saffron",
+  "radha-krishna": "gold",
+  hanuman: "saffron",
+  "bhagavad-gita": "stone",
+  shiv: "stone",
+  festivals: "gold",
   vrindavan: "gold",
   "premanand-ji": "saffron",
 };
 
+/** Per-category fallback images from Unsplash */
+const categoryImageMap: Record<string, string> = {
+  hanuman:
+    "https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?w=600&q=80&auto=format&fit=crop",
+  "radha-krishna":
+    "https://images.unsplash.com/photo-1582234372722-50d7ccc30ebd?w=600&q=80&auto=format&fit=crop",
+  shiv:
+    "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=600&q=80&auto=format&fit=crop",
+  "bhagavad-gita":
+    "https://images.unsplash.com/photo-1609587312208-cea54be969e7?w=600&q=80&auto=format&fit=crop",
+  vrindavan:
+    "https://images.unsplash.com/photo-1626015266924-f7ea2c69d14e?w=600&q=80&auto=format&fit=crop",
+  festivals:
+    "https://images.unsplash.com/photo-1574169208507-84376144848b?w=600&q=80&auto=format&fit=crop",
+};
+
+const defaultImage =
+  "https://images.unsplash.com/photo-1609587312208-cea54be969e7?w=600&q=80&auto=format&fit=crop";
+
+/** Hardcoded fallback articles matching the design spec */
+const fallbackArticles: ArticleItem[] = [
+  {
+    id: "hanuman-chalisa",
+    category: "हनुमान",
+    badgeVariant: "saffron",
+    title: "हनुमान चालीसा का आध्यात्मिक महत्व",
+    description:
+      "हनुमान चालीसा की चालीस चौपाइयां मन को शक्ति, विश्वास और भय से मुक्ति प्रदान करती हैं।",
+    slug: "/bhakti-gyaan/hanuman-chalisa-paath-kyun-karein",
+    readTime: "5 मिनट",
+    imageUrl: categoryImageMap["hanuman"],
+  },
+  {
+    id: "karma-dharma",
+    category: "भक्ति ज्ञान",
+    badgeVariant: "stone",
+    title: "कर्म और धर्म के बीच क्या संबंध है?",
+    description:
+      "कर्म योग और धर्म का गहरा संबंध — जानिए कैसे श्रेष्ठ कर्म ही सच्चा धर्म है।",
+    slug: "/bhakti-gyaan/karma-yoga-kya-hai",
+    readTime: "6 मिनट",
+    imageUrl: defaultImage,
+  },
+  {
+    id: "subah-bhakti",
+    category: "आध्यात्मिक जीवन",
+    badgeVariant: "gold",
+    title: "सुबह की भक्ति दिनचर्या कैसे बनाएं?",
+    description:
+      "प्रातःकाल की सरल भक्ति दिनचर्या जो आपके पूरे दिन को शांत और सकारात्मक बना सकती है।",
+    slug: "/bhakti-gyaan/subah-ki-10-minute-bhakti-dincharya",
+    readTime: "4 मिनट",
+    imageUrl: defaultImage,
+  },
+  {
+    id: "ekadashi",
+    category: "त्योहार",
+    badgeVariant: "saffron",
+    title: "एकादशी व्रत का आध्यात्मिक महत्व",
+    description:
+      "एकादशी व्रत को केवल उपवास नहीं, बल्कि एक आंतरिक शुद्धि और ईश्वर के प्रति समर्पण का अवसर माना जाता है।",
+    slug: "/festivals",
+    readTime: "5 मिनट",
+    imageUrl: categoryImageMap["festivals"],
+  },
+  {
+    id: "radha-krishna-prem",
+    category: "राधा कृष्ण",
+    badgeVariant: "gold",
+    title: "राधा-कृष्ण के प्रेम से हमें क्या सीख मिलती है?",
+    description:
+      "राधा-कृष्ण का निस्वार्थ दिव्य प्रेम हमें जीवन में अपेक्षाओं से मुक्त होकर प्रेम करना सिखाता है।",
+    slug: "/bhakti-gyaan/radha-krishna-bhakti",
+    readTime: "6 मिनट",
+    imageUrl: categoryImageMap["radha-krishna"],
+  },
+  {
+    id: "vrindavan-yatra",
+    category: "यात्रा",
+    badgeVariant: "saffron",
+    title: "वृंदावन यात्रा: एक आध्यात्मिक अनुभव",
+    description:
+      "वृंदावन — जहां हर गली में कृष्ण नाम गूंजता है। एक ऐसी यात्रा जो मन और आत्मा दोनों को स्पर्श करती है।",
+    slug: "/vrindavan",
+    readTime: "7 मिनट",
+    imageUrl: categoryImageMap["vrindavan"],
+  },
+];
+
 export function LatestArticles({ articles: propArticles = [] }: LatestArticlesProps = {}) {
-  const displayArticles: ArticleItem[] = propArticles.slice(0, 6).map((art) => ({
-    id: art.slug,
-    category: art.category,
-    badgeVariant: (categoryBadgeMap[art.categorySlug || ""] || "maroon") as BadgeVariant,
-    title: art.title,
-    description: art.description,
-    slug: `/bhakti-gyaan/${art.slug}`,
-    motif: art.symbol,
-  }));
+  const displayArticles: ArticleItem[] =
+    propArticles.length > 0
+      ? propArticles.slice(0, 6).map((art) => ({
+          id: art.slug,
+          category: art.category,
+          badgeVariant: (categoryBadgeMap[art.categorySlug || ""] ||
+            "saffron") as BadgeVariant,
+          title: art.title,
+          description: art.description,
+          slug: `/bhakti-gyaan/${art.slug}`,
+          readTime: art.readTime || "5 मिनट",
+          imageUrl:
+            art.featuredImageUrl ||
+            categoryImageMap[art.categorySlug || ""] ||
+            defaultImage,
+        }))
+      : fallbackArticles;
 
   return (
     <section
       id="bhakti-gyaan"
       aria-labelledby="latest-articles-heading"
-      className="py-14 sm:py-20 bg-[#FDFBF7]"
+      className="py-20 lg:py-28 bg-[#FBF8F0]"
     >
       <div className="container-desktop">
+
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-12 gap-4 pb-4 border-b border-[#6B1724]/8">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-4 pb-5 border-b border-[rgba(200,154,60,0.2)]">
           <div>
-            <div className="inline-flex items-center gap-2 mb-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#D97706]" aria-hidden="true" />
-              <span className="text-xs sm:text-sm font-semibold tracking-wider text-[#D97706] uppercase font-body">
-                अध्ययन एवं चिंतन
-              </span>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="accent-dot" aria-hidden="true" />
+              <span className="label-ui text-[#C85A17]">अध्ययन एवं चिंतन</span>
             </div>
             <h2
               id="latest-articles-heading"
-              className="font-heading text-3xl sm:text-4xl text-[#6B1724] tracking-tight leading-snug"
+              className="font-serif text-[#1C1C17] leading-tight"
+              style={{ fontSize: "clamp(1.5rem, 3vw, 2.125rem)", fontWeight: 500 }}
             >
-              भक्ति ज्ञान
+              नवीनतम लेख&nbsp;•&nbsp;भक्ति ज्ञान
             </h2>
-            <p className="text-[#5A6065] text-base sm:text-lg max-w-xl mt-2 leading-relaxed font-body">
-              भक्ति, आध्यात्मिक जीवन और सनातन परंपराओं से जुड़े उपयोगी लेख पढ़ें।
-            </p>
           </div>
-
-          <div className="hidden md:block">
-            <Link
-              href="/bhakti-gyaan"
-              className="inline-flex items-center gap-1.5 text-sm sm:text-base font-medium text-[#6B1724] hover:text-[#52111C] transition-colors duration-150 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B1724] rounded-sm py-1"
-            >
-              <span>सभी लेख देखें</span>
-              <span aria-hidden="true">→</span>
-            </Link>
-          </div>
+          <Link
+            href="/bhakti-gyaan"
+            className="hidden lg:inline-flex items-center gap-1.5 font-ui text-sm font-semibold text-[#C85A17] hover:text-[#A8440B] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] rounded py-1"
+          >
+            <span>सभी लेख देखें</span>
+            <span aria-hidden="true">→</span>
+          </Link>
         </div>
 
-        {/* Articles Grid: 1 col (mobile), 2 cols (tablet), 3 cols (desktop) */}
-        {displayArticles.length === 0 ? (
-          <div className="text-center py-12 px-4 rounded-2xl bg-[#F8F4EC] border border-[#6B1724]/10">
-            <p className="text-base text-[#5A6065] font-body">
-              वर्तमान में कोई लेख उपलब्ध नहीं है। कृपया शीघ्र पुनः पधारें।
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {displayArticles.map((article) => (
-              <article
-                key={article.id}
-                className="group bg-white rounded-2xl border border-[#6B1724]/10 shadow-[0_2px_12px_rgba(107,23,36,0.03)] hover:shadow-[0_8px_24px_rgba(107,23,36,0.07)] hover:border-[#6B1724]/20 transition-all duration-200 flex flex-col overflow-hidden"
-              >
-              {/* Image / Artwork Placeholder Frame */}
+        {/* 3-column article grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7">
+          {displayArticles.map((article) => (
+            <article
+              key={article.id}
+              className="group bg-white rounded-[6px] border border-[rgba(200,154,60,0.22)] shadow-[0_2px_12px_-2px_rgba(40,25,15,0.04)] hover:shadow-[0_10px_30px_-4px_rgba(40,25,15,0.08)] hover:border-[rgba(200,154,60,0.4)] transition-all duration-200 flex flex-col overflow-hidden"
+            >
+              {/* Article image frame */}
               <Link
                 href={article.slug}
                 tabIndex={-1}
                 aria-hidden="true"
-                className="block relative aspect-[16/10] bg-gradient-to-br from-[#F8F4EC] to-[#F1EADF] overflow-hidden border-b border-[#6B1724]/8"
+                className="block relative overflow-hidden"
+                style={{ aspectRatio: "16/10" }}
               >
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
-                  <div className="w-12 h-12 rounded-full bg-white/70 border border-[#6B1724]/10 flex items-center justify-center text-[#6B1724] mb-2 shadow-xs group-hover:scale-105 transition-transform duration-200">
-                    <span className="font-heading text-lg select-none">
-                      ✦
-                    </span>
-                  </div>
-                  <span className="text-xs font-medium text-[#6B1724]/70 font-body">
-                    {article.motif}
-                  </span>
-                </div>
+                <Image
+                  src={article.imageUrl}
+                  alt={article.title}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 400px"
+                />
+                {/* Subtle warm image overlay */}
+                <div
+                  className="absolute inset-0 bg-gradient-to-t from-[rgba(28,20,12,0.15)] to-transparent"
+                  aria-hidden="true"
+                />
               </Link>
 
-              {/* Card Body */}
-              <div className="p-5 sm:p-6 flex flex-col grow">
+              {/* Card body */}
+              <div className="p-5 lg:p-6 flex flex-col grow">
+                {/* Category badge */}
                 <div className="mb-3">
-                  <Badge variant={article.badgeVariant}>
-                    {article.category}
-                  </Badge>
+                  <Badge variant={article.badgeVariant}>{article.category}</Badge>
                 </div>
 
-                <h3 className="font-heading text-lg sm:text-xl text-[#1F2326] group-hover:text-[#6B1724] transition-colors leading-snug line-clamp-2 mb-2">
+                {/* Title */}
+                <h3
+                  className="font-serif text-[#1C1C17] group-hover:text-[#C85A17] transition-colors duration-200 leading-snug line-clamp-2 mb-2.5"
+                  style={{ fontSize: "1.0625rem", fontWeight: 600 }}
+                >
                   <Link
                     href={article.slug}
-                    className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B1724] rounded-sm"
+                    className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] rounded"
                   >
                     {article.title}
                   </Link>
                 </h3>
 
-                <p className="text-sm text-[#5A6065] leading-relaxed line-clamp-2 mb-4 font-body grow">
+                {/* Description */}
+                <p className="font-serif text-sm text-[#6B706A] leading-relaxed line-clamp-2 mb-4 grow">
                   {article.description}
                 </p>
 
-                {/* Read Link */}
-                <div className="pt-3 border-t border-[#6B1724]/6 mt-auto">
+                {/* Footer */}
+                <div className="pt-3.5 border-t border-[rgba(107,112,106,0.12)] mt-auto flex items-center justify-between">
+                  <span className="font-ui text-[11px] text-[#8B7267] tracking-wide">
+                    {article.readTime} पढ़ने का समय
+                  </span>
                   <Link
                     href={article.slug}
-                    className="inline-flex items-center gap-1 text-sm font-semibold text-[#6B1724] group-hover:text-[#52111C] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B1724] rounded-sm"
+                    className="inline-flex items-center gap-1 font-ui text-xs font-semibold text-[#C85A17] group-hover:text-[#A8440B] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] rounded"
                   >
                     <span>पढ़ें</span>
                     <span
@@ -158,16 +254,15 @@ export function LatestArticles({ articles: propArticles = [] }: LatestArticlesPr
               </div>
             </article>
           ))}
-          </div>
-        )}
+        </div>
 
-        {/* Mobile View All Link */}
-        <div className="mt-8 text-center md:hidden">
+        {/* Mobile view all */}
+        <div className="mt-8 text-center lg:hidden">
           <Link
             href="/bhakti-gyaan"
-            className="inline-flex items-center justify-center min-h-[44px] px-6 rounded-xl bg-[#F8F4EC] text-[#6B1724] font-medium border border-[#6B1724]/15 hover:bg-white transition-colors"
+            className="inline-flex items-center justify-center min-h-[44px] px-7 rounded border border-[rgba(200,154,60,0.35)] bg-white font-ui text-sm font-semibold text-[#C85A17] hover:bg-[#F5EFE2] transition-colors"
           >
-            <span>सभी लेख देखें →</span>
+            सभी लेख देखें →
           </Link>
         </div>
       </div>

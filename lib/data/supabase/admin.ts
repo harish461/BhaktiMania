@@ -13,6 +13,8 @@ export interface AdminArticleListItem {
   symbol: string;
   read_time: string;
   featured: boolean;
+  featured_image_url: string | null;
+  featured_image_alt: string | null;
   published_at: string | null;
   created_at: string;
   updated_at: string;
@@ -38,6 +40,8 @@ interface RawAdminArticleJoin {
   symbol: string;
   read_time: string;
   featured: boolean;
+  featured_image_url: string | null;
+  featured_image_alt: string | null;
   published_at: string | null;
   created_at: string;
   updated_at: string;
@@ -77,6 +81,8 @@ export async function getAdminArticles(options?: {
       symbol,
       read_time,
       featured,
+      featured_image_url,
+      featured_image_alt,
       published_at,
       created_at,
       updated_at,
@@ -123,6 +129,8 @@ export async function getAdminArticles(options?: {
     symbol: row.symbol,
     read_time: row.read_time,
     featured: row.featured,
+    featured_image_url: row.featured_image_url || null,
+    featured_image_alt: row.featured_image_alt || null,
     published_at: row.published_at,
     created_at: row.created_at,
     updated_at: row.updated_at,

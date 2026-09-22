@@ -13,7 +13,7 @@ const categoryBadgeMap: Record<string, BadgeVariant> = {
   "radha-krishna": "saffron",
   hanuman: "gold",
   "bhagavad-gita": "maroon",
-  shiv: "neutral",
+  shiv: "stone",
   festivals: "saffron",
   vrindavan: "gold",
   "premanand-ji": "saffron",

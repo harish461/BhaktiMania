@@ -8,6 +8,8 @@ export type SortOption =
   | "title_asc"
   | "title_desc";
 
+export type ImageFilterOption = "all" | "available" | "missing";
+
 interface ArticleFiltersProps {
   search: string;
   onSearchChange: (value: string) => void;
@@ -17,6 +19,8 @@ interface ArticleFiltersProps {
   onCategoryChange: (value: string) => void;
   featuredFilter: string;
   onFeaturedChange: (value: string) => void;
+  imageFilter: ImageFilterOption;
+  onImageFilterChange: (value: ImageFilterOption) => void;
   sortOption: SortOption;
   onSortChange: (value: SortOption) => void;
   categories: SupabaseCategory[];
@@ -33,6 +37,8 @@ export function ArticleFilters({
   onCategoryChange,
   featuredFilter,
   onFeaturedChange,
+  imageFilter,
+  onImageFilterChange,
   sortOption,
   onSortChange,
   categories,
@@ -115,7 +121,7 @@ export function ArticleFilters({
 
       {/* Bottom Filter Row: Categorical Filters & Active Badges */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pt-1 border-t border-[#6B1724]/10">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 flex-1">
           {/* Status Filter */}
           <div>
             <label htmlFor="status-filter" className="block text-[11px] font-semibold text-[#5A6065] uppercase tracking-wider mb-1">
@@ -170,6 +176,30 @@ export function ArticleFilters({
               <option value="not-featured">Not Featured</option>
             </select>
           </div>
+
+          {/* AI Image Filter (Requirement 7 & 12: Generate Missing Images) */}
+          <div>
+            <label htmlFor="image-filter" className="block text-[11px] font-semibold text-[#B45309] uppercase tracking-wider mb-1 flex items-center justify-between">
+              <span>Image Status</span>
+              {imageFilter === "missing" && (
+                <span className="text-[10px] text-amber-700 font-bold lowercase">active filter</span>
+              )}
+            </label>
+            <select
+              id="image-filter"
+              value={imageFilter}
+              onChange={(e) => onImageFilterChange(e.target.value as ImageFilterOption)}
+              className={`w-full px-3 py-2 min-h-[44px] border rounded-xl text-xs sm:text-sm text-[#1F2326] focus:outline-none focus:ring-2 focus:ring-[#D97706] cursor-pointer ${
+                imageFilter === "missing"
+                  ? "bg-amber-50/80 border-amber-400 font-semibold text-amber-950"
+                  : "bg-[#FDFBF7] border-[#6B1724]/20"
+              }`}
+            >
+              <option value="all">All Images</option>
+              <option value="available">✓ Images Available</option>
+              <option value="missing">⚠ Images Missing (Generate Needed)</option>
+            </select>
+          </div>
         </div>
 
         {/* Active Filter State & Reset Controls */}
@@ -189,7 +219,7 @@ export function ArticleFilters({
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <span>Clear filters</span>
+              <span>Reset</span>
             </button>
           </div>
         )}
