@@ -57,9 +57,9 @@ export function Hero() {
       className="w-full bg-[#FFFFFF] overflow-x-hidden"
     >
       {/* ══════════════════════════════════════════════════════════════════
-          1. CENTERED MASTHEAD / BRAND TITLE AREA
+          1. CENTERED MASTHEAD / BRAND TITLE AREA (Desktop ONLY — Hidden on mobile)
       ══════════════════════════════════════════════════════════════════ */}
-      <div className="w-full pt-3 pb-3 flex flex-col items-center justify-center text-center px-4">
+      <div className="hidden md:flex w-full pt-3 pb-3 flex-col items-center justify-center text-center px-4">
         <Link
           href="/"
           className="group inline-flex flex-col items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] rounded-full"
@@ -95,80 +95,73 @@ export function Hero() {
 
       {/* ══════════════════════════════════════════════════════════════════
           2. TRUE FULL-WIDTH EDGE-TO-EDGE EDITORIAL TRIPTYCH
-          - 3 equal columns on desktop
-          - Preserved heights, crops, positions, and anchor links
-          - Redesigned sophisticated editorial bottom overlay
+          - Mobile: Compact 215px images + ~104px captions (Articles + Shop 100% visible in 1st view)
+          - Desktop: Preserved 500–560px height with absolute bottom overlay (UNCHANGED)
       ══════════════════════════════════════════════════════════════════ */}
-      <div className="w-full max-w-none p-0 m-0 border-t border-b border-[rgba(107,112,106,0.15)]">
+      <div className="w-full max-w-none p-0 m-0 border-t md:border-t border-b border-[rgba(107,112,106,0.15)]">
         <div className="grid grid-cols-1 md:grid-cols-3 w-full p-0 m-0 gap-0">
           {panels.map((panel, idx) => (
             <Link
               key={panel.id}
               href={panel.href}
-              className={`group relative block w-full overflow-hidden h-[480px] sm:h-[520px] lg:h-[560px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] ${
+              className={`group relative flex flex-col md:block w-full overflow-hidden md:h-[500px] lg:h-[560px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] ${
                 idx < panels.length - 1
-                  ? "md:border-r border-b md:border-b-0 border-[rgba(107,112,106,0.15)]"
+                  ? "border-b md:border-b-0 md:border-r border-[rgba(107,112,106,0.15)]"
                   : ""
               }`}
             >
-              {/* Full-bleed cinematic image with subtle 1.02–1.03 scale on hover */}
-              <div className="absolute inset-0 overflow-hidden bg-[#252824]">
+              {/* Image Container: Dedicated 215px on mobile, full-bleed absolute on desktop */}
+              <div className="relative w-full h-[215px] sm:h-[230px] md:absolute md:inset-0 md:h-full overflow-hidden bg-[#252824] flex-shrink-0">
                 <Image
                   src={panel.imageSrc}
                   alt={panel.imageAlt}
                   fill
-                  priority
+                  priority={idx === 0}
                   style={{ objectPosition: panel.objectPosition }}
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
                   sizes="(max-width: 768px) 100vw, 33.333vw"
                 />
               </div>
 
-              {/* ── Modern Premium Editorial Caption Overlay ──
-                  - Subtle warm ivory overlay: rgba(251, 248, 240, 0.82)
-                  - Image clearly visible underneath, feels like one composition
-                  - Height: compact ~130–145px
-                  - Disciplined editorial typography & spacing
-              ── */}
+              {/* Caption Container: Integrated below image on mobile (~104px), absolute overlay on desktop (~135px) */}
               <div
-                className="absolute bottom-0 inset-x-0 px-6 py-5 sm:px-7 sm:py-5 lg:px-[30px] lg:pt-[22px] lg:pb-[24px] flex flex-col justify-end transition-colors duration-500 group-hover:bg-[rgba(251,248,240,0.88)]"
+                className="relative md:absolute md:bottom-0 md:inset-x-0 w-full px-4 py-3 sm:px-5 sm:py-3.5 md:px-7 md:py-5 lg:px-[30px] lg:pt-[22px] lg:pb-[24px] flex flex-col justify-end transition-colors duration-500 bg-[#FBF8F0] md:bg-[rgba(251,248,240,0.82)] group-hover:bg-[#FBF8F0] md:group-hover:bg-[rgba(251,248,240,0.88)]"
                 style={{
-                  backgroundColor: "rgba(251, 248, 240, 0.82)",
                   borderTop: "1px solid rgba(107, 112, 106, 0.12)",
                 }}
               >
-                {/* 1. Refined Category Eyebrow — Poppins 600, 10.5–11px, #A8440B */}
-                <div
-                  className="text-[10.5px] sm:text-[11px] font-semibold tracking-[0.06em] uppercase mb-[7px] [font-family:var(--font-poppins)]"
+                {/* 1. Category Eyebrow */}
+                <span
+                  className="block text-[10px] md:text-[10.5px] lg:text-[11px] font-semibold tracking-[0.06em] uppercase m-0 mb-1 leading-none [font-family:var(--font-poppins)]"
                   style={{ color: "#A8440B" }}
                 >
                   {panel.category}
-                </div>
+                </span>
 
-                {/* 2. Main Title — Poppins 700, 28–30px, #252824, line-height 1.15 */}
+                {/* 2. Main Title */}
                 <h2
-                  className="text-[26px] sm:text-[28px] lg:text-[30px] font-bold leading-[1.15] tracking-tight mb-[6px] text-[#252824] group-hover:text-[#1C1C17] transition-colors duration-200 [font-family:var(--font-poppins)]"
+                  className="text-[21px] sm:text-[23px] md:text-[26px] lg:text-[28px] font-bold leading-tight tracking-tight m-0 mb-1 text-[#252824] group-hover:text-[#1C1C17] transition-colors duration-200 [font-family:var(--font-poppins)]"
                   style={{ fontWeight: 700 }}
                 >
                   {panel.title}
                 </h2>
 
-                {/* 3. Subdued Description — Poppins 400, 11.5–12px, #6B706A, 1 line */}
-                <p className="text-[11.5px] sm:text-[12px] font-normal leading-[1.45] text-[#6B706A] line-clamp-1 mb-0 [font-family:var(--font-poppins)]">
+                {/* 3. Description — exactly 1 line on mobile */}
+                <p className="text-[11px] sm:text-[11.5px] md:text-[12px] font-normal leading-snug text-[#6B706A] line-clamp-1 m-0 mb-2 [font-family:var(--font-poppins)]">
                   {panel.description}
                 </p>
 
-                {/* 4. Editorial Text Link CTA with subtle short saffron accent line */}
-                <div className="mt-3 sm:mt-3.5 flex flex-col items-start">
-                  <div className="inline-flex items-center text-[12.5px] sm:text-[13px] font-semibold tracking-[0.02em] text-[#252824] group-hover:text-[#A8440B] transition-colors duration-200 [font-family:var(--font-poppins)]">
+                {/* 4. Editorial Text Link CTA */}
+                <div className="flex flex-col items-start leading-none">
+                  <div className="inline-flex items-center text-[11.5px] sm:text-[12px] md:text-[12.5px] font-semibold tracking-[0.02em] text-[#252824] group-hover:text-[#A8440B] transition-colors duration-200 [font-family:var(--font-poppins)]">
                     <span>{panel.ctaText}</span>
-                    <span className="text-[#C85A17] ml-1.5 transition-transform duration-300 ease-out group-hover:translate-x-1 text-[13px]">
+                    <span className="text-[#C85A17] ml-1.5 transition-transform duration-300 ease-out group-hover:translate-x-1 text-[11.5px] md:text-[12.5px]">
                       →
                     </span>
                   </div>
-                  {/* Editorial Accent Underline: ~26px wide, 1.5px high */}
+                  {/* Underline */}
                   <div
-                    className="w-[26px] h-[1.5px] bg-[#C85A17] mt-1 transition-all duration-300 ease-out group-hover:w-[34px] group-hover:bg-[#A8440B]"
+                    className="w-[22px] md:w-[26px] h-[1.5px] bg-[#C85A17] mt-1 transition-all duration-300 ease-out group-hover:w-[30px] md:group-hover:w-[34px] group-hover:bg-[#A8440B]"
                     aria-hidden="true"
                   />
                 </div>

@@ -83,11 +83,42 @@ export function Header() {
             : "shadow-[0_1px_3px_rgba(37,40,36,0.03)]"
         }`}
       >
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-[62px] md:h-16 flex items-center justify-between">
 
-          {/* ── LEFT: Brand Logo (on subpages / when scrolled) + Facebook / YouTube ── */}
+          {/* ── LEFT: Mobile Logo (Always on mobile) / Desktop Branding (Subpages or scrolled) + Desktop Socials ── */}
           <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
-            {/* Show brand link whenever on a subpage or scrolled on homepage */}
+            {/* 1. Mobile Logo: Always visible on mobile screens (< 768px) */}
+            <div className="flex md:hidden items-center">
+              <Link
+                href="/"
+                onClick={(e) => {
+                  if (pathname === "/") {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    if (window.location.hash) {
+                      window.history.pushState(null, "", "/");
+                    }
+                  }
+                }}
+                className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] rounded-full"
+                aria-label="BhaktiMania Home"
+              >
+                <div className="relative w-[46px] h-[46px] rounded-full p-[2px] bg-gradient-to-b from-[#D8B45A] via-[#C89A3C] to-[#A8440B] shadow-xs flex-shrink-0">
+                  <div className="w-full h-full rounded-full overflow-hidden bg-white relative">
+                    <Image
+                      src="/images/bhaktimania-logo.jpg"
+                      alt="BhaktiMania Logo"
+                      fill
+                      priority
+                      className="object-cover object-center"
+                      sizes="46px"
+                    />
+                  </div>
+                </div>
+              </Link>
+            </div>
+
+            {/* 2. Desktop Branding: Visible ONLY on desktop (>= 768px) when on a subpage or scrolled */}
             {(pathname !== "/" || scrolled) && (
               <Link
                 href="/"
@@ -100,7 +131,7 @@ export function Header() {
                     }
                   }
                 }}
-                className="flex items-center gap-2 mr-1 sm:mr-2 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] rounded"
+                className="hidden md:flex items-center gap-2 mr-1 sm:mr-2 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] rounded"
                 aria-label="BhaktiMania Home"
               >
                 <div className="relative w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-b from-[#D8B45A] via-[#C89A3C] to-[#A8440B] shadow-xs group-hover:scale-105 transition-transform duration-200 flex-shrink-0">
@@ -114,37 +145,40 @@ export function Header() {
                     />
                   </div>
                 </div>
-                <span className="font-bold text-[16px] text-[#252824] group-hover:text-[#C85A17] transition-colors [font-family:var(--font-poppins)] hidden sm:inline">
+                <span className="font-bold text-[16px] text-[#252824] group-hover:text-[#C85A17] transition-colors [font-family:var(--font-poppins)]">
                   BhaktiMania
                 </span>
               </Link>
             )}
 
-            <a
-              href={socialConfig.facebook.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="BhaktiMania on Facebook"
-              className="text-[#111111] hover:text-[#C85A17] transition-colors duration-200"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-              </svg>
-            </a>
-            <a
-              href={socialConfig.youtube.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="BhaktiMania on YouTube"
-              className="text-[#111111] hover:text-[#C85A17] transition-colors duration-200"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-              </svg>
-            </a>
+            {/* 3. Desktop Social Icons (hidden on mobile, rendered on the right on mobile) */}
+            <div className="hidden md:flex items-center gap-4">
+              <a
+                href={socialConfig.facebook.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="BhaktiMania on Facebook"
+                className="text-[#111111] hover:text-[#C85A17] transition-colors duration-200"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+              </a>
+              <a
+                href={socialConfig.youtube.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="BhaktiMania on YouTube"
+                className="text-[#111111] hover:text-[#C85A17] transition-colors duration-200"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                </svg>
+              </a>
+            </div>
           </div>
 
-          {/* ── CENTER: Desktop Navigation ── */}
+          {/* ── CENTER: Desktop Navigation (Hidden on mobile) ── */}
           <nav
             className="hidden md:flex items-center gap-1 lg:gap-2 xl:gap-3"
             aria-label="Main navigation"
@@ -183,8 +217,35 @@ export function Header() {
             })}
           </nav>
 
-          {/* ── RIGHT: Stepped Hamburger Icon Button ── */}
-          <div className="flex items-center flex-shrink-0">
+          {/* ── RIGHT: Mobile Socials + Stepped Hamburger Icon Button ── */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            {/* Mobile-only social icons placed neatly before hamburger */}
+            <div className="flex md:hidden items-center gap-2 mr-0.5">
+              <a
+                href={socialConfig.facebook.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="BhaktiMania on Facebook"
+                className="flex items-center justify-center w-8 h-8 rounded-full text-[#252824] hover:text-[#C85A17] hover:bg-[#F5EFE2] transition-colors duration-150"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+              </a>
+              <a
+                href={socialConfig.youtube.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="BhaktiMania on YouTube"
+                className="flex items-center justify-center w-8 h-8 rounded-full text-[#252824] hover:text-[#C85A17] hover:bg-[#F5EFE2] transition-colors duration-150"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                </svg>
+              </a>
+            </div>
+
+            {/* Stepped Hamburger Icon Button */}
             <button
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -212,7 +273,7 @@ export function Header() {
       </header>
 
       {/* Spacer to preserve normal document flow beneath fixed header */}
-      <div className="h-16 shrink-0" aria-hidden="true" />
+      <div className="h-[62px] md:h-16 shrink-0" aria-hidden="true" />
 
       {/* ── Social + Navigation Slide-Out Drawer ── */}
       <SocialDrawer isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
