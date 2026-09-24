@@ -140,8 +140,7 @@ export function Hero() {
 
                 {/* 2. Main Title */}
                 <h2
-                  className="text-[21px] sm:text-[23px] md:text-[26px] lg:text-[28px] font-bold leading-tight tracking-tight m-0 mb-1 text-[#252824] group-hover:text-[#1C1C17] transition-colors duration-200 [font-family:var(--font-poppins)]"
-                  style={{ fontWeight: 700 }}
+                  className="text-[15px] sm:text-[17px] md:text-[26px] lg:text-[28px] font-semibold md:font-bold leading-tight tracking-tight m-0 mb-1 text-[#252824] group-hover:text-[#1C1C17] transition-colors duration-200 [font-family:var(--font-poppins)]"
                 >
                   {panel.title}
                 </h2>
