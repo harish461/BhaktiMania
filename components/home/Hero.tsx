@@ -99,14 +99,14 @@ export function Hero() {
           - Desktop: Preserved 500–560px height with absolute bottom overlay (UNCHANGED)
       ══════════════════════════════════════════════════════════════════ */}
       <div className="w-full max-w-none p-0 m-0 border-t md:border-t border-b border-[rgba(107,112,106,0.15)]">
-        <div className="grid grid-cols-1 md:grid-cols-3 w-full p-0 m-0 gap-0">
+        <div className="grid grid-cols-1 md:grid-cols-3 w-full p-0 m-0 pt-[15px] pb-[15px] md:py-0 gap-[15px] md:gap-0">
           {panels.map((panel, idx) => (
             <Link
               key={panel.id}
               href={panel.href}
-              className={`group relative flex flex-col md:block w-full overflow-hidden md:h-[500px] lg:h-[560px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] ${
+              className={`group relative flex flex-col md:block w-full overflow-hidden md:h-[500px] lg:h-[560px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] border-b md:border-b-0 ${
                 idx < panels.length - 1
-                  ? "border-b md:border-b-0 md:border-r border-[rgba(107,112,106,0.15)]"
+                  ? "md:border-r border-[rgba(107,112,106,0.15)]"
                   : ""
               }`}
             >
@@ -140,7 +140,7 @@ export function Hero() {
 
                 {/* 2. Main Title */}
                 <h2
-                  className="text-[15px] sm:text-[17px] md:text-[26px] lg:text-[28px] font-semibold md:font-bold leading-tight tracking-tight m-0 mb-1 text-[#252824] group-hover:text-[#1C1C17] transition-colors duration-200 [font-family:var(--font-poppins)]"
+                  className="text-[17px] md:text-[26px] lg:text-[28px] font-semibold md:font-bold leading-tight tracking-tight m-0 mb-1 text-[#252824] group-hover:text-[#1C1C17] transition-colors duration-200 [font-family:var(--font-poppins)]"
                 >
                   {panel.title}
                 </h2>
