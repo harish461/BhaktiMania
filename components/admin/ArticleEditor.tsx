@@ -14,11 +14,13 @@ import {
 import { ArticleDetailsCard } from "./editor/ArticleDetailsCard";
 import { ArticleContentCard } from "./editor/ArticleContentCard";
 import { ArticleSeoCard } from "./editor/ArticleSeoCard";
+import { ArticleAffiliateCard } from "./editor/ArticleAffiliateCard";
 import { ArticlePublishingCard } from "./editor/ArticlePublishingCard";
 import { StickyActionBar, SaveState } from "./editor/StickyActionBar";
 import { ArticlePreviewModal } from "./editor/ArticlePreviewModal";
 import { UnsavedChangesModal } from "./editor/UnsavedChangesModal";
 import { DeleteConfirmModal } from "./editor/DeleteConfirmModal";
+import type { AffiliateProductItem } from "@/lib/data/supabase/types";
 
 function generateSlugFromTitle(title: string): string {
   if (!title) return "";
@@ -38,6 +40,7 @@ interface ArticleEditorProps {
   initialArticle?: AdminArticleDetail | null;
   categories: SupabaseCategory[];
   authors: DatabaseAuthor[];
+  allActiveProducts?: AffiliateProductItem[];
   siteUrl?: string;
 }
 
@@ -46,9 +49,11 @@ export default function ArticleEditor({
   initialArticle,
   categories,
   authors,
+  allActiveProducts = [],
   siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "",
 }: ArticleEditorProps) {
   const router = useRouter();
+
 
   // 1. Primary Form State
   const [title, setTitle] = useState(initialArticle?.title || "");
@@ -639,11 +644,19 @@ export default function ArticleEditor({
         siteUrl={siteUrl}
       />
 
-      {/* Section D: Publishing & Lifecycle */}
+      {/* Section D: Affiliate Recommendations */}
+      <ArticleAffiliateCard
+        articleId={currentArticleId || initialArticle?.id}
+        onSaveDraftFirst={handleSaveDraftFirst}
+        allActiveProducts={allActiveProducts}
+      />
+
+      {/* Section E: Publishing & Lifecycle */}
       <ArticlePublishingCard
         initialArticle={initialArticle}
         mode={mode}
       />
+
 
       {/* Sticky Bottom Action Bar */}
       <StickyActionBar

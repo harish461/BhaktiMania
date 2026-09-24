@@ -85,8 +85,10 @@ export default async function AdminDashboardLayout({
     { label: "Create Article", href: "/admin/articles/new" },
     { label: "Categories", href: "/admin/categories" },
     { label: "Authors", href: "/admin/authors" },
+    { label: "Affiliate Products", href: "/admin/affiliate-products" },
     { label: "Settings", href: "/admin/dashboard#settings" },
   ];
+
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] flex flex-col">

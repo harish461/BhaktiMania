@@ -89,3 +89,57 @@ export interface SupabaseCategory extends DevotionalCategory {
   sortOrder: number;
   isActive: boolean;
 }
+
+/**
+ * Raw relational record from public.affiliate_products table in Supabase.
+ */
+export type DatabaseAffiliateProduct = {
+  id: string;
+  name: string;
+  merchant: string;
+  affiliate_url: string;
+  image_url: string | null;
+  short_description: string | null;
+  category: string | null;
+  is_active: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+/**
+ * Raw relational record from public.article_affiliate_products table in Supabase.
+ */
+export type DatabaseArticleAffiliateProduct = {
+  id: string;
+  article_id: string;
+  product_id: string;
+  sort_order: number;
+  contextual_note: string | null;
+  created_at: string;
+};
+
+/**
+ * Database join record between article_affiliate_products and affiliate_products.
+ */
+export type DatabaseArticleAffiliateWithProduct = DatabaseArticleAffiliateProduct & {
+  affiliate_products: DatabaseAffiliateProduct | null;
+};
+
+/**
+ * Frontend-compatible Affiliate Product interface enriched with article-specific contextual note.
+ */
+export interface AffiliateProductItem {
+  id: string;
+  name: string;
+  merchant: string;
+  affiliateUrl: string;
+  imageUrl: string | null;
+  shortDescription: string | null;
+  category: string | null;
+  isActive: boolean;
+  displayOrder: number;
+  contextualNote?: string | null;
+  sortOrder?: number;
+}
+

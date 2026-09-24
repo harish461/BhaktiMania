@@ -870,3 +870,86 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
   };
 }
 
+export interface AdminAffiliateProductItem {
+  id: string;
+  name: string;
+  merchant: string;
+  affiliate_url: string;
+  image_url: string | null;
+  short_description: string | null;
+  category: string | null;
+  is_active: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+  linkedArticlesCount?: number;
+}
+
+/**
+ * Fetches all affiliate products for the admin management table.
+ * Includes both active and inactive items.
+ */
+export async function getAdminAffiliateProducts(): Promise<AdminAffiliateProductItem[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("affiliate_products")
+    .select(`
+      id,
+      name,
+      merchant,
+      affiliate_url,
+      image_url,
+      short_description,
+      category,
+      is_active,
+      display_order,
+      created_at,
+      updated_at,
+      article_affiliate_products (count)
+    `)
+    .order("display_order", { ascending: true })
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("[getAdminAffiliateProducts] Error fetching products:", error);
+    return [];
+  }
+
+  if (!data || data.length === 0) {
+    return [];
+  }
+
+  interface RawAdminAffiliateJoin {
+    id: string;
+    name: string;
+    merchant: string;
+    affiliate_url: string;
+    image_url: string | null;
+    short_description: string | null;
+    category: string | null;
+    is_active: boolean;
+    display_order: number;
+    created_at: string;
+    updated_at: string;
+    article_affiliate_products: { count: number }[] | null;
+  }
+
+  return (data as unknown as RawAdminAffiliateJoin[]).map((item) => ({
+    id: item.id,
+    name: item.name,
+    merchant: item.merchant,
+    affiliate_url: item.affiliate_url,
+    image_url: item.image_url,
+    short_description: item.short_description,
+    category: item.category,
+    is_active: item.is_active,
+    display_order: item.display_order,
+    created_at: item.created_at,
+    updated_at: item.updated_at,
+    linkedArticlesCount: item.article_affiliate_products?.[0]?.count ?? 0,
+  }));
+}
+
+
+

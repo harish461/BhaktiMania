@@ -10,6 +10,9 @@ import { FeaturedArticle } from "@/components/home/FeaturedArticle";
 // Categories
 import { DevotionalCategories } from "@/components/home/DevotionalCategories";
 
+// Curated devotional shop recommendations
+import { CuratedAffiliateSection } from "@/components/home/CuratedAffiliateSection";
+
 // Latest articles
 import { LatestArticles } from "@/components/home/LatestArticles";
 
@@ -17,7 +20,12 @@ import { LatestArticles } from "@/components/home/LatestArticles";
 import { SocialMediaSection } from "@/components/home/SocialMediaSection";
 
 // Data
-import { getPublishedArticles, getCategories } from "@/lib/data/supabase";
+import {
+  getPublishedArticles,
+  getCategories,
+  getCuratedAffiliateProducts,
+} from "@/lib/data/supabase";
+import type { AffiliateProductItem } from "@/lib/data/supabase/types";
 import { siteConfig } from "@/lib/config/site";
 
 export default async function Home() {
@@ -32,14 +40,18 @@ export default async function Home() {
 
   let articles: Awaited<ReturnType<typeof getPublishedArticles>> = [];
   let categories: Awaited<ReturnType<typeof getCategories>> = [];
+  let affiliateProducts: AffiliateProductItem[] = [];
 
   try {
-    const [fetchedArticles, fetchedCategories] = await Promise.all([
-      getPublishedArticles(),
-      getCategories(),
-    ]);
+    const [fetchedArticles, fetchedCategories, fetchedProducts] =
+      await Promise.all([
+        getPublishedArticles(),
+        getCategories(),
+        getCuratedAffiliateProducts(3),
+      ]);
     articles = fetchedArticles;
     categories = fetchedCategories;
+    affiliateProducts = fetchedProducts;
   } catch (err: unknown) {
     console.error("[app/page] Error loading homepage Supabase data:", err);
   }
@@ -70,6 +82,9 @@ export default async function Home() {
 
         {/* 5. Devotional Categories — 3×2 grid */}
         <DevotionalCategories categories={categories} />
+
+        {/* 6. Curated Devotional Essentials */}
+        <CuratedAffiliateSection products={affiliateProducts} />
       </main>
 
       <Footer />

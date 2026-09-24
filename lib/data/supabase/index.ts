@@ -15,3 +15,5 @@ export * from "./categories";
 export * from "./articles";
 export * from "./authors";
 export * from "./admin";
+export * from "./affiliate";
+

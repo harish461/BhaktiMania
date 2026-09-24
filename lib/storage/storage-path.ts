@@ -61,6 +61,53 @@ export function isPathInArticleNamespace(
 }
 
 /**
+ * Validates whether a string is a valid UUID for products.
+ */
+export function isValidProductId(productId: string): boolean {
+  if (!productId || typeof productId !== "string") return false;
+  return UUID_REGEX.test(productId.trim());
+}
+
+/**
+ * Constructs a secure, collision-resistant server-side storage path for an affiliate product image.
+ * Format: affiliate-products/{productId}/{timestamp}-{randomHex}.{extension}
+ */
+export function generateAffiliateProductImagePath(
+  productId: string,
+  extension: string
+): string {
+  const cleanId = productId.trim();
+  if (!isValidProductId(cleanId)) {
+    throw new Error(`Invalid product ID: ${productId}. Must be a valid UUID.`);
+  }
+
+  const cleanExt = extension.replace(/^\./, "").trim().toLowerCase();
+  const timestamp = Date.now();
+  const randomSuffix = crypto.randomBytes(4).toString("hex");
+  const uniqueId = `${timestamp}-${randomSuffix}`;
+
+  return `affiliate-products/${cleanId}/${uniqueId}.${cleanExt}`;
+}
+
+/**
+ * Verifies that a storage path strictly belongs to the expected affiliate product namespace:
+ * affiliate-products/{productId}/...
+ */
+export function isPathInAffiliateNamespace(
+  productId: string,
+  storagePath: string
+): boolean {
+  if (!productId || !storagePath) return false;
+  const cleanId = productId.trim().toLowerCase();
+  const cleanPath = storagePath.trim().replace(/^\/+/, "");
+
+  if (!isValidProductId(cleanId)) return false;
+
+  const expectedPrefix = `affiliate-products/${cleanId}/`;
+  return cleanPath.startsWith(expectedPrefix);
+}
+
+/**
  * Extracts the storage object path from a Supabase public URL or returns the path if already relative.
  * 
  * Example URL:
@@ -74,8 +121,8 @@ export function extractStoragePathFromUrl(
   if (!urlOrPath) return null;
   const trimmed = urlOrPath.trim();
 
-  // If it's already a relative storage path (e.g. articles/uuid/featured-xxx.webp)
-  if (trimmed.startsWith("articles/")) {
+  // If it's already a relative storage path (e.g. articles/uuid/... or affiliate-products/uuid/...)
+  if (trimmed.startsWith("articles/") || trimmed.startsWith("affiliate-products/")) {
     return trimmed;
   }
 

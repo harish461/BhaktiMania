@@ -4,6 +4,7 @@ import {
   getAllCategoriesForEditor,
   getAllAuthorsForEditor,
   getAdminArticleById,
+  getAllActiveAffiliateProducts,
 } from "@/lib/data/supabase";
 import ArticleEditor from "@/components/admin/ArticleEditor";
 
@@ -20,10 +21,11 @@ interface EditArticlePageProps {
 export default async function EditArticlePage({ params }: EditArticlePageProps) {
   const { id } = await params;
 
-  const [article, categories, authors] = await Promise.all([
+  const [article, categories, authors, affiliateProducts] = await Promise.all([
     getAdminArticleById(id),
     getAllCategoriesForEditor(),
     getAllAuthorsForEditor(),
+    getAllActiveAffiliateProducts(),
   ]);
 
   if (!article) {
@@ -36,7 +38,9 @@ export default async function EditArticlePage({ params }: EditArticlePageProps) 
       initialArticle={article}
       categories={categories}
       authors={authors}
+      allActiveProducts={affiliateProducts}
       siteUrl={process.env.NEXT_PUBLIC_SITE_URL || ""}
     />
   );
 }
+

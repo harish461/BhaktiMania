@@ -1,5 +1,9 @@
 import React from "react";
-import { getCategories, getAllAuthorsForEditor } from "@/lib/data/supabase";
+import {
+  getCategories,
+  getAllAuthorsForEditor,
+  getAllActiveAffiliateProducts,
+} from "@/lib/data/supabase";
 import ArticleEditor from "@/components/admin/ArticleEditor";
 
 export const metadata = {
@@ -7,9 +11,10 @@ export const metadata = {
 };
 
 export default async function NewArticlePage() {
-  const [categories, authors] = await Promise.all([
+  const [categories, authors, affiliateProducts] = await Promise.all([
     getCategories(),
     getAllAuthorsForEditor(),
+    getAllActiveAffiliateProducts(),
   ]);
 
   return (
@@ -17,7 +22,9 @@ export default async function NewArticlePage() {
       mode="create"
       categories={categories}
       authors={authors}
+      allActiveProducts={affiliateProducts}
       siteUrl={process.env.NEXT_PUBLIC_SITE_URL || ""}
     />
   );
 }
+
