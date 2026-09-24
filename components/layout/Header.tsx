@@ -4,216 +4,218 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { socialConfig } from "@/lib/social/config";
+import { SocialDrawer } from "@/components/social/SocialDrawer";
 
 interface NavItem {
   label: string;
-  labelHindi: string;
   href: string;
+  targetId?: string;
 }
 
-// ─── Verified routes only — no broken links or 404s ──────────────────────────
 const navItems: NavItem[] = [
-  { label: "Home", labelHindi: "होम", href: "/" },
-  { label: "Bhakti Gyaan", labelHindi: "भक्ति ज्ञान", href: "/bhakti-gyaan" },
-  { label: "Bhakti Vichar", labelHindi: "भक्ति विचार", href: "/bhakti-vichar" },
-  { label: "Bhagavad Gita", labelHindi: "भगवद्गीता", href: "/bhagavad-gita" },
-  { label: "Festivals", labelHindi: "त्योहार", href: "/festivals" },
-  { label: "Radha Krishna", labelHindi: "राधा कृष्ण", href: "/radha-krishna" },
-  { label: "Vrindavan", labelHindi: "वृंदावन", href: "/vrindavan" },
+  { label: "Home", href: "/", targetId: "top" },
+  { label: "Articles", href: "/#articles", targetId: "articles" },
+  { label: "Shop", href: "/#shop", targetId: "shop" },
+  { label: "Bhakti Calendar", href: "/#calendar", targetId: "calendar" },
+  { label: "Social Links", href: "/#social", targetId: "social" },
+  { label: "About Us", href: "/about" },
 ];
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
+  /* ── Detect scroll to add elevated shadow & header logo on homepage ── */
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isMenuOpen) setIsMenuOpen(false);
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isMenuOpen]);
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
+  /* ── Smooth scroll when landing on an anchor from an external page ── */
   useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isMenuOpen]);
+    if (pathname === "/" && typeof window !== "undefined" && window.location.hash) {
+      const hashId = window.location.hash.replace("#", "");
+      if (hashId === "top") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        const timer = setTimeout(() => {
+          const el = document.getElementById(hashId);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 150);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [pathname]);
+
+  /* ── In-page smooth scrolling when already on the homepage ── */
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    item: NavItem
+  ) => {
+    if (pathname === "/" && item.targetId) {
+      e.preventDefault();
+      if (item.targetId === "top") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        if (window.location.hash) {
+          window.history.pushState(null, "", "/");
+        }
+      } else {
+        const el = document.getElementById(item.targetId);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+          window.history.pushState(null, "", `/#${item.targetId}`);
+        }
+      }
+    }
+  };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#FBF8F0]/98 backdrop-blur-md border-b border-[rgba(200,154,60,0.22)] transition-colors">
-      <div className="container-desktop flex items-center justify-between h-16 lg:h-[72px]">
+    <>
+      <header
+        className={`fixed top-0 left-0 right-0 w-full z-40 bg-[#FFFFFF] border-b border-[#EAE4D8] transition-all duration-300 ${
+          scrolled
+            ? "shadow-[0_4px_20px_rgba(37,40,36,0.08)] bg-[#FFFFFF]/98 backdrop-blur-md"
+            : "shadow-[0_1px_3px_rgba(37,40,36,0.03)]"
+        }`}
+      >
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
 
-        {/* ── Brand Logo: [Icon] + BhaktiMania + A JOURNEY WITHIN ── */}
-        <Link
-          href="/"
-          className="flex items-center gap-2.5 sm:gap-3 group py-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] flex-shrink-0"
-          aria-label="BhaktiMania — A Journey Within — होम पर जाएं"
-        >
-          <Image
-            src="/images/logo-icon.png"
-            alt="BhaktiMania Logo"
-            width={42}
-            height={42}
-            className="w-9 h-9 sm:w-10 sm:h-10 lg:w-[42px] lg:h-[42px] object-contain flex-shrink-0 drop-shadow-[0_1px_4px_rgba(40,25,15,0.12)] group-hover:scale-105 transition-transform duration-200"
-            priority
-          />
-          <div className="flex flex-col">
-            <span className="font-heading text-[22px] sm:text-[24px] lg:text-[26px] text-[#C85A17] tracking-tight leading-none group-hover:text-[#A8440B] transition-colors duration-200 font-bold">
-              BhaktiMania
-            </span>
-            <span className="font-ui text-[8.5px] sm:text-[9.5px] text-[#8B7267] tracking-[0.18em] uppercase mt-1 leading-none font-semibold">
-              A JOURNEY WITHIN
-            </span>
-          </div>
-        </Link>
-
-        {/* ── Desktop Navigation ── */}
-        <nav
-          className="hidden lg:flex items-center gap-0.5 xl:gap-1.5"
-          aria-label="मुख्य नेविगेशन"
-        >
-          {navItems.map((item) => {
-            const isActive =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
-            return (
+          {/* ── LEFT: Brand Logo (on subpages / when scrolled) + Facebook / YouTube ── */}
+          <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+            {/* Show brand link whenever on a subpage or scrolled on homepage */}
+            {(pathname !== "/" || scrolled) && (
               <Link
-                key={item.href}
-                href={item.href}
-                className={`relative px-2.5 xl:px-3 py-2 font-ui text-[13px] xl:text-[13.5px] font-medium transition-colors duration-150 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] group ${
-                  isActive
-                    ? "text-[#C85A17]"
-                    : "text-[#252824] hover:text-[#C85A17]"
-                }`}
+                href="/"
+                onClick={(e) => {
+                  if (pathname === "/") {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    if (window.location.hash) {
+                      window.history.pushState(null, "", "/");
+                    }
+                  }
+                }}
+                className="flex items-center gap-2 mr-1 sm:mr-2 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] rounded"
+                aria-label="BhaktiMania Home"
               >
-                {item.labelHindi}
-                {/* Active saffron underline indicator */}
-                {isActive && (
-                  <span
-                    className="absolute bottom-0 left-2.5 right-2.5 xl:left-3 xl:right-3 h-[2px] bg-[#C85A17] rounded-full"
-                    aria-hidden="true"
-                  />
-                )}
-                {/* Hover underline for inactive */}
-                {!isActive && (
-                  <span
-                    className="absolute bottom-0 left-2.5 right-2.5 xl:left-3 xl:right-3 h-[2px] bg-[#C89A3C] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"
-                    aria-hidden="true"
-                  />
-                )}
+                <div className="relative w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-b from-[#D8B45A] via-[#C89A3C] to-[#A8440B] shadow-xs group-hover:scale-105 transition-transform duration-200 flex-shrink-0">
+                  <div className="w-full h-full rounded-full overflow-hidden bg-white relative">
+                    <Image
+                      src="/images/bhaktimania-logo.jpg"
+                      alt="BhaktiMania Logo"
+                      fill
+                      className="object-cover object-center"
+                      sizes="32px"
+                    />
+                  </div>
+                </div>
+                <span className="font-bold text-[16px] text-[#252824] group-hover:text-[#C85A17] transition-colors [font-family:var(--font-poppins)] hidden sm:inline">
+                  BhaktiMania
+                </span>
               </Link>
-            );
-          })}
-        </nav>
-
-        {/* ── Right Controls ── */}
-        <div className="flex items-center gap-1.5">
-          {/* Link to search / articles hub */}
-          <Link
-            href="/bhakti-gyaan"
-            aria-label="लेख और ज्ञान खोजें"
-            className="flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded text-[#6B706A] hover:text-[#C85A17] hover:bg-[#F5EFE2] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] cursor-pointer"
-          >
-            <svg
-              className="w-4.5 h-4.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.75}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </Link>
-
-          {/* Mobile hamburger button */}
-          <button
-            type="button"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label={isMenuOpen ? "मेनू बंद करें" : "मेनू खोलें"}
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-nav"
-            className="lg:hidden flex items-center justify-center h-11 w-11 rounded text-[#252824] hover:text-[#C85A17] hover:bg-[#F5EFE2] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] cursor-pointer"
-          >
-            {isMenuOpen ? (
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.75}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.75}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
             )}
-          </button>
-        </div>
-      </div>
 
-      {/* ── Mobile Navigation Drawer ── */}
-      {isMenuOpen && (
-        <div
-          id="mobile-nav"
-          className="lg:hidden border-t border-[rgba(200,154,60,0.2)] bg-[#FBF8F0] px-4 py-4 shadow-[0_12px_36px_rgba(28,20,12,0.12)] max-h-[calc(100vh-64px)] overflow-y-auto"
-        >
-          <nav className="flex flex-col gap-1" aria-label="मोबाइल नेविगेशन">
+            <a
+              href={socialConfig.facebook.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="BhaktiMania on Facebook"
+              className="text-[#111111] hover:text-[#C85A17] transition-colors duration-200"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+              </svg>
+            </a>
+            <a
+              href={socialConfig.youtube.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="BhaktiMania on YouTube"
+              className="text-[#111111] hover:text-[#C85A17] transition-colors duration-200"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+              </svg>
+            </a>
+          </div>
+
+          {/* ── CENTER: Desktop Navigation ── */}
+          <nav
+            className="hidden md:flex items-center gap-1 lg:gap-2 xl:gap-3"
+            aria-label="Main navigation"
+          >
             {navItems.map((item) => {
               const isActive =
-                item.href === "/"
-                  ? pathname === "/"
-                  : pathname.startsWith(item.href);
+                (item.href === "/" && pathname === "/") ||
+                (item.href !== "/" && pathname === item.href);
+
               return (
                 <Link
-                  key={item.href}
+                  key={item.label}
                   href={item.href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center gap-3 min-h-[48px] px-4 py-3 font-ui text-[15px] font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] ${
+                  onClick={(e) => handleNavClick(e, item)}
+                  className={`relative px-3 py-1.5 text-[14.5px] leading-none transition-colors duration-150 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] group [font-family:var(--font-poppins)] ${
                     isActive
-                      ? "text-[#C85A17] bg-[#C85A17]/8 font-semibold"
-                      : "text-[#252824] hover:text-[#C85A17] hover:bg-[#F5EFE2]"
+                      ? "font-semibold text-[#C85A17]"
+                      : "font-medium text-[#252824] hover:text-[#C85A17]"
                   }`}
                 >
+                  {item.label}
                   {isActive && (
                     <span
-                      className="w-1.5 h-5 bg-[#C85A17] rounded-full flex-shrink-0"
+                      className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#C85A17] rounded-full"
                       aria-hidden="true"
                     />
                   )}
-                  {item.labelHindi}
+                  {!isActive && (
+                    <span
+                      className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#C89A3C] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-center"
+                      aria-hidden="true"
+                    />
+                  )}
                 </Link>
               );
             })}
           </nav>
+
+          {/* ── RIGHT: Stepped Hamburger Icon Button ── */}
+          <div className="flex items-center flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMenuOpen}
+              aria-controls="social-navigation-drawer"
+              className="flex items-center justify-center h-10 w-10 rounded-full text-[#252824] hover:text-[#C85A17] hover:bg-[#F5EFE2] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] cursor-pointer"
+            >
+              {isMenuOpen ? (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    strokeLinecap="round"
+                    strokeWidth={2.4}
+                    d="M8.5 6.5h12M3.5 12h17M12.5 17.5h8"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
-      )}
-    </header>
+      </header>
+
+      {/* Spacer to preserve normal document flow beneath fixed header */}
+      <div className="h-16 shrink-0" aria-hidden="true" />
+
+      {/* ── Social + Navigation Slide-Out Drawer ── */}
+      <SocialDrawer isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+    </>
   );
 }
-

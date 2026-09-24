@@ -42,6 +42,7 @@
   --font-display: var(--font-display), Georgia, serif;
   --font-serif: var(--font-serif), 'Noto Serif', Georgia, serif;
   --font-ui: var(--font-ui), system-ui, -apple-system, sans-serif;
+  --font-poppins: var(--font-poppins), 'Poppins', system-ui, -apple-system, sans-serif;
   /* Backward-compat aliases for existing inner pages */
   --font-heading: var(--font-heading), Georgia, serif;
   --font-body: var(--font-body), system-ui, -apple-system, sans-serif;
@@ -82,6 +83,7 @@ html,
 body {
   overflow-x: hidden;
   max-width: 100vw;
+  scroll-behavior: smooth;
 }
 
 body {

@@ -1,34 +1,29 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-
-// Hero
 import { Hero } from "@/components/home/Hero";
-
-// Featured editorial
-import { FeaturedArticle } from "@/components/home/FeaturedArticle";
-
-// Categories
-import { DevotionalCategories } from "@/components/home/DevotionalCategories";
-
-// Curated devotional shop recommendations
-import { CuratedAffiliateSection } from "@/components/home/CuratedAffiliateSection";
-
-// Latest articles
 import { LatestArticles } from "@/components/home/LatestArticles";
-
-// Social media
-import { SocialMediaSection } from "@/components/home/SocialMediaSection";
-
-// Data
-import {
-  getPublishedArticles,
-  getCategories,
-  getCuratedAffiliateProducts,
-} from "@/lib/data/supabase";
-import type { AffiliateProductItem } from "@/lib/data/supabase/types";
+import { CuratedAffiliateSection } from "@/components/home/CuratedAffiliateSection";
+import { FestivalSection } from "@/components/home/FestivalSection";
+import { SocialSection } from "@/components/home/SocialSection";
+import { getPublishedArticles } from "@/lib/data/supabase/articles";
+import { getCuratedAffiliateProducts } from "@/lib/data/supabase/affiliate";
 import { siteConfig } from "@/lib/config/site";
 
 export default async function Home() {
+  // Fetch live articles & curated shop products from Supabase (server component)
+  let articles: Awaited<ReturnType<typeof getPublishedArticles>> = [];
+  let products: Awaited<ReturnType<typeof getCuratedAffiliateProducts>> = [];
+  try {
+    const [fetchedArticles, fetchedProducts] = await Promise.all([
+      getPublishedArticles(),
+      getCuratedAffiliateProducts(3),
+    ]);
+    articles = fetchedArticles;
+    products = fetchedProducts;
+  } catch (err) {
+    console.error("[homepage] Failed to fetch data from Supabase:", err);
+  }
+
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -38,55 +33,34 @@ export default async function Home() {
     inLanguage: "hi",
   };
 
-  let articles: Awaited<ReturnType<typeof getPublishedArticles>> = [];
-  let categories: Awaited<ReturnType<typeof getCategories>> = [];
-  let affiliateProducts: AffiliateProductItem[] = [];
-
-  try {
-    const [fetchedArticles, fetchedCategories, fetchedProducts] =
-      await Promise.all([
-        getPublishedArticles(),
-        getCategories(),
-        getCuratedAffiliateProducts(3),
-      ]);
-    articles = fetchedArticles;
-    categories = fetchedCategories;
-    affiliateProducts = fetchedProducts;
-  } catch (err: unknown) {
-    console.error("[app/page] Error loading homepage Supabase data:", err);
-  }
-
-  const featuredArticle = articles.find((a) => a.featured) || articles[0] || null;
-
   return (
-    <div className="min-h-screen flex flex-col bg-[#FBF8F0]">
+    <div id="top" className="min-h-screen flex flex-col bg-[#FFFFFF]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
 
+      {/* 1. Fixed editorial header */}
       <Header />
 
+      {/* 2. Hero — full-width triptych */}
       <main className="flex-1">
-        {/* 1. Cinematic Hero */}
         <Hero />
 
-        {/* 2. Featured Article — two-column editorial */}
-        <FeaturedArticle article={featuredArticle} />
-
-        {/* 3. Latest Articles — 3-column cards */}
+        {/* 3. Articles section — anchor target: #articles */}
         <LatestArticles articles={articles} />
 
-        {/* 4. Social Media — YouTube Shorts + Facebook */}
-        <SocialMediaSection />
+        {/* 4. Shop section — anchor target: #shop */}
+        <CuratedAffiliateSection products={products} />
 
-        {/* 5. Devotional Categories — 3×2 grid */}
-        <DevotionalCategories categories={categories} />
+        {/* 5. Calendar / Festivals section — anchor target: #calendar */}
+        <FestivalSection />
 
-        {/* 6. Curated Devotional Essentials */}
-        <CuratedAffiliateSection products={affiliateProducts} />
+        {/* 6. Facebook & YouTube Social Section — anchor target: #social */}
+        <SocialSection />
       </main>
 
+      {/* 7. Footer */}
       <Footer />
     </div>
   );

@@ -4,6 +4,7 @@ import {
   Playfair_Display,
   Noto_Serif_Devanagari,
   Plus_Jakarta_Sans,
+  Poppins,
 } from "next/font/google";
 import { siteConfig, getCanonicalUrl } from "@/lib/config/site";
 import { AdSenseScript } from "@/components/ads/AdSenseScript";
@@ -51,6 +52,14 @@ const notoDevanagari = Noto_Sans_Devanagari({
   display: "swap",
 });
 
+/** Poppins — modern premium UI font for header navigation and hero typography. */
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   ...(siteConfig.url ? { metadataBase: new URL(siteConfig.url) } : {}),
   title: {
@@ -60,6 +69,16 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   alternates: {
     canonical: getCanonicalUrl("/"),
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "192x192" },
+      { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+    ],
+    apple: [
+      { url: "/icon.png", sizes: "192x192", type: "image/png" },
+    ],
   },
   robots: {
     index: true,
@@ -108,7 +127,7 @@ export default function RootLayout({
   return (
     <html
       lang="hi"
-      className={`${playfairDisplay.variable} ${notoSerifDevanagari.variable} ${plusJakartaSans.variable} ${notoDevanagari.variable} h-full antialiased`}
+      className={`${playfairDisplay.variable} ${notoSerifDevanagari.variable} ${plusJakartaSans.variable} ${notoDevanagari.variable} ${poppins.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#FBF8F0] text-[#1C1C17] font-body">
         <AdSenseScript />

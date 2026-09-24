@@ -2,103 +2,179 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+interface FeaturePanel {
+  id: string;
+  category: string;
+  title: string;
+  description: string;
+  ctaText: string;
+  href: string;
+  imageSrc: string;
+  imageAlt: string;
+  objectPosition: string;
+}
+
+const panels: FeaturePanel[] = [
+  {
+    id: "articles",
+    category: "भक्ति ज्ञान",
+    title: "Bhakti Articles",
+    description: "भक्ति, आध्यात्मिक ज्ञान और जीवन को सरल बनाने वाले प्रेरणादायक लेख।",
+    ctaText: "Explore Articles",
+    href: "/#articles",
+    imageSrc: "/images/hero-panel-articles.jpg",
+    imageAlt: "Sacred Bhagavad Gita manuscript on sandalwood stand with brass diya and peacock feather",
+    objectPosition: "center center",
+  },
+  {
+    id: "shop",
+    category: "भक्ति संग्रह",
+    title: "Bhakti Shop",
+    description: "भक्ति और साधना से जुड़ी चुनी हुई उपयोगी वस्तुएँ।",
+    ctaText: "Explore Shop",
+    href: "/#shop",
+    imageSrc: "/images/hero-panel-shop.jpg",
+    imageAlt: "Luxury Indian devotional boutique still life with Rudraksha mala, brass deity, incense and diya",
+    objectPosition: "center center",
+  },
+  {
+    id: "calendar",
+    category: "पर्व एवं विशेष दिन",
+    title: "Bhakti Calendar",
+    description: "एकादशी, पूर्णिमा, पर्व और प्रमुख आध्यात्मिक तिथियों की जानकारी।",
+    ctaText: "View Calendar",
+    href: "/#calendar",
+    imageSrc: "/images/hero-panel-calendar.jpg",
+    imageAlt: "Auspicious Indian temple festival with hanging brass bells, marigold garlands, and earthen diyas",
+    objectPosition: "center center",
+  },
+];
+
 export function Hero() {
   return (
     <section
-      aria-labelledby="hero-heading"
-      className="relative w-full overflow-hidden bg-[#1C1C17]"
-      style={{ minHeight: "680px" }}
+      aria-label="BhaktiMania Full-Width Editorial Hero"
+      className="w-full bg-[#FFFFFF] overflow-x-hidden"
     >
-      {/* ── Cinematic Background Image ── */}
-      <div className="absolute inset-0">
-        <Image
-          src="/images/hero-temple.jpg"
-          alt="Vrindavan-style sacred temple at golden hour — devotional atmosphere with diya and marigolds"
-          fill
-          className="object-cover object-center"
-          priority
-          sizes="100vw"
-        />
-        {/* Warm dark overlay — not green, not flat */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(28,20,12,0.82) 0%, rgba(40,18,10,0.70) 45%, rgba(28,20,12,0.60) 100%)",
-          }}
-          aria-hidden="true"
-        />
-        {/* Bottom fade for smooth section transition */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-24"
-          style={{
-            background:
-              "linear-gradient(to top, rgba(251,248,240,0.12) 0%, transparent 100%)",
-          }}
-          aria-hidden="true"
-        />
+      {/* ══════════════════════════════════════════════════════════════════
+          1. CENTERED MASTHEAD / BRAND TITLE AREA
+      ══════════════════════════════════════════════════════════════════ */}
+      <div className="w-full pt-3 pb-3 flex flex-col items-center justify-center text-center px-4">
+        <Link
+          href="/"
+          className="group inline-flex flex-col items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] rounded-full"
+          aria-label="BhaktiMania — Home"
+        >
+          {/* Logo */}
+          <div className="relative w-[120px] h-[120px] sm:w-[128px] sm:h-[128px] lg:w-[134px] lg:h-[134px] rounded-full p-[2.5px] bg-gradient-to-b from-[#D8B45A] via-[#C89A3C] to-[#A8440B] shadow-[0_4px_18px_rgba(200,154,60,0.18)] group-hover:scale-[1.02] transition-transform duration-300">
+            <div className="w-full h-full rounded-full overflow-hidden bg-[#FFFFFF] relative">
+              <Image
+                src="/images/bhaktimania-logo.jpg"
+                alt="BhaktiMania — भक्ति • ज्ञान • शांति"
+                fill
+                priority
+                className="object-cover object-center"
+                sizes="(max-width: 640px) 120px, 134px"
+              />
+            </div>
+          </div>
+
+          {/* Tagline with flanking hairlines */}
+          <div className="mt-2 flex items-center justify-center gap-3">
+            <span className="w-12 sm:w-16 h-px bg-[#C89A3C]/50" aria-hidden="true" />
+            <span
+              className="text-[11.5px] tracking-[0.28em] uppercase text-[#751F2A] font-medium [font-family:var(--font-poppins)]"
+              style={{ fontWeight: 500 }}
+            >
+              भक्ति • ज्ञान • शांति
+            </span>
+            <span className="w-12 sm:w-16 h-px bg-[#C89A3C]/50" aria-hidden="true" />
+          </div>
+        </Link>
       </div>
 
-      {/* ── Hero Content ── */}
-      <div className="relative z-10 container-desktop flex flex-col justify-center py-20 lg:py-28" style={{ minHeight: "680px" }}>
-        <div className="max-w-2xl">
-
-          {/* Eyebrow / Category Label */}
-          <div className="inline-flex items-center gap-2.5 mb-7">
-            {/* Thin gold hairline left */}
-            <span className="w-8 h-px bg-[#C89A3C]/60" aria-hidden="true" />
-            <span className="font-ui text-[11px] font-semibold tracking-[0.15em] uppercase text-[#C89A3C]">
-              BhaktiMania&nbsp;•&nbsp;A Journey Within
-            </span>
-          </div>
-
-          {/* Main H1 — Hindi, Noto Serif Devanagari */}
-          <h1
-            id="hero-heading"
-            className="font-serif text-[#FBF8F0] mb-6 leading-[1.22]"
-            style={{ fontSize: "clamp(2.25rem, 4.5vw, 3.25rem)", fontWeight: 600 }}
-          >
-            जहाँ भक्ति केवल भावना नहीं,
-            <br />
-            <span className="text-[#D8B45A]">जीवन जीने का मार्ग है</span>
-          </h1>
-
-          {/* Supporting copy — English, elegant */}
-          <p className="font-serif text-[#EDE2CF]/80 mb-10 leading-relaxed" style={{ fontSize: "clamp(1rem, 1.5vw, 1.125rem)" }}>
-            Discover timeless wisdom, devotion, stories and spiritual inspiration
-            for everyday life.
-          </p>
-
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 w-full sm:w-auto">
+      {/* ══════════════════════════════════════════════════════════════════
+          2. TRUE FULL-WIDTH EDGE-TO-EDGE EDITORIAL TRIPTYCH
+          - 3 equal columns on desktop
+          - Preserved heights, crops, positions, and anchor links
+          - Redesigned sophisticated editorial bottom overlay
+      ══════════════════════════════════════════════════════════════════ */}
+      <div className="w-full max-w-none p-0 m-0 border-t border-b border-[rgba(107,112,106,0.15)]">
+        <div className="grid grid-cols-1 md:grid-cols-3 w-full p-0 m-0 gap-0">
+          {panels.map((panel, idx) => (
             <Link
-              href="/bhakti-gyaan"
-              className="inline-flex items-center justify-center gap-2 h-12 px-7 font-ui text-[13px] font-semibold tracking-wide bg-[#C85A17] text-[#FBF8F0] border border-[rgba(200,154,60,0.4)] rounded hover:bg-[#A8440B] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89A3C] w-full sm:w-auto text-center"
+              key={panel.id}
+              href={panel.href}
+              className={`group relative block w-full overflow-hidden h-[480px] sm:h-[520px] lg:h-[560px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] ${
+                idx < panels.length - 1
+                  ? "md:border-r border-b md:border-b-0 border-[rgba(107,112,106,0.15)]"
+                  : ""
+              }`}
             >
-              Explore Bhakti Gyaan
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
-            <Link
-              href="/bhakti-vichar"
-              className="inline-flex items-center justify-center gap-2 h-12 px-7 font-ui text-[13px] font-semibold tracking-wide bg-transparent text-[#FBF8F0] border border-[rgba(200,154,60,0.5)] rounded hover:bg-[rgba(200,154,60,0.08)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89A3C] w-full sm:w-auto text-center"
-            >
-              Today&apos;s Bhakti Vichar
-            </Link>
-          </div>
-        </div>
+              {/* Full-bleed cinematic image with subtle 1.02–1.03 scale on hover */}
+              <div className="absolute inset-0 overflow-hidden bg-[#252824]">
+                <Image
+                  src={panel.imageSrc}
+                  alt={panel.imageAlt}
+                  fill
+                  priority
+                  style={{ objectPosition: panel.objectPosition }}
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
+                  sizes="(max-width: 768px) 100vw, 33.333vw"
+                />
+              </div>
 
-        {/* Bottom-right editorial caption */}
-        <div className="hidden sm:flex absolute bottom-8 right-0 container-desktop justify-end pointer-events-none" aria-hidden="true">
-          <div className="text-right">
-            <div className="font-ui text-[10px] tracking-[0.15em] uppercase text-[#C89A3C]/60 mb-0.5">
-              Sacred Editorial
-            </div>
-            <div className="font-serif text-sm text-[#EDE2CF]/40 italic">
-              भक्ति • ज्ञान • शांति
-            </div>
-          </div>
+              {/* ── Modern Premium Editorial Caption Overlay ──
+                  - Subtle warm ivory overlay: rgba(251, 248, 240, 0.82)
+                  - Image clearly visible underneath, feels like one composition
+                  - Height: compact ~130–145px
+                  - Disciplined editorial typography & spacing
+              ── */}
+              <div
+                className="absolute bottom-0 inset-x-0 px-6 py-5 sm:px-7 sm:py-5 lg:px-[30px] lg:pt-[22px] lg:pb-[24px] flex flex-col justify-end transition-colors duration-500 group-hover:bg-[rgba(251,248,240,0.88)]"
+                style={{
+                  backgroundColor: "rgba(251, 248, 240, 0.82)",
+                  borderTop: "1px solid rgba(107, 112, 106, 0.12)",
+                }}
+              >
+                {/* 1. Refined Category Eyebrow — Poppins 600, 10.5–11px, #A8440B */}
+                <div
+                  className="text-[10.5px] sm:text-[11px] font-semibold tracking-[0.06em] uppercase mb-[7px] [font-family:var(--font-poppins)]"
+                  style={{ color: "#A8440B" }}
+                >
+                  {panel.category}
+                </div>
+
+                {/* 2. Main Title — Poppins 700, 28–30px, #252824, line-height 1.15 */}
+                <h2
+                  className="text-[26px] sm:text-[28px] lg:text-[30px] font-bold leading-[1.15] tracking-tight mb-[6px] text-[#252824] group-hover:text-[#1C1C17] transition-colors duration-200 [font-family:var(--font-poppins)]"
+                  style={{ fontWeight: 700 }}
+                >
+                  {panel.title}
+                </h2>
+
+                {/* 3. Subdued Description — Poppins 400, 11.5–12px, #6B706A, 1 line */}
+                <p className="text-[11.5px] sm:text-[12px] font-normal leading-[1.45] text-[#6B706A] line-clamp-1 mb-0 [font-family:var(--font-poppins)]">
+                  {panel.description}
+                </p>
+
+                {/* 4. Editorial Text Link CTA with subtle short saffron accent line */}
+                <div className="mt-3 sm:mt-3.5 flex flex-col items-start">
+                  <div className="inline-flex items-center text-[12.5px] sm:text-[13px] font-semibold tracking-[0.02em] text-[#252824] group-hover:text-[#A8440B] transition-colors duration-200 [font-family:var(--font-poppins)]">
+                    <span>{panel.ctaText}</span>
+                    <span className="text-[#C85A17] ml-1.5 transition-transform duration-300 ease-out group-hover:translate-x-1 text-[13px]">
+                      →
+                    </span>
+                  </div>
+                  {/* Editorial Accent Underline: ~26px wide, 1.5px high */}
+                  <div
+                    className="w-[26px] h-[1.5px] bg-[#C85A17] mt-1 transition-all duration-300 ease-out group-hover:w-[34px] group-hover:bg-[#A8440B]"
+                    aria-hidden="true"
+                  />
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </section>
