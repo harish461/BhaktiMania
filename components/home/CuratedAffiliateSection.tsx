@@ -118,7 +118,7 @@ export function CuratedAffiliateSection({
           <div>
             <h2
               id="shop-heading"
-              className="text-[22px] font-bold text-[#1C1C17] leading-tight"
+              className="text-[17px] md:text-[22px] font-bold text-[#1C1C17] leading-tight"
               style={{ fontFamily: "var(--font-poppins), Poppins, sans-serif", fontWeight: 700 }}
             >
               Bhakti Shop

@@ -19,7 +19,7 @@ export function SocialSection() {
           <div>
             <h2
               id="social-heading"
-              className="text-[22px] font-bold text-[#1C1C17] leading-tight"
+              className="text-[17px] md:text-[22px] font-bold text-[#1C1C17] leading-tight"
               style={{ fontWeight: 700 }}
             >
               Facebook & YouTube

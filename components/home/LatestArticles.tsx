@@ -212,7 +212,7 @@ export function LatestArticles({ articles: propArticles = [] }: LatestArticlesPr
           <div>
             <h2
               id="latest-articles-heading"
-              className="text-[22px] font-bold text-[#1C1C17] leading-tight"
+              className="text-[17px] md:text-[22px] font-bold text-[#1C1C17] leading-tight"
               style={{ fontFamily: "var(--font-poppins), Poppins, sans-serif", fontWeight: 700 }}
             >
               Articles

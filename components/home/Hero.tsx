@@ -99,7 +99,7 @@ export function Hero() {
           - Desktop: Preserved 500–560px height with absolute bottom overlay (UNCHANGED)
       ══════════════════════════════════════════════════════════════════ */}
       <div className="w-full max-w-none p-0 m-0 border-t md:border-t border-b border-[rgba(107,112,106,0.15)]">
-        <div className="grid grid-cols-1 md:grid-cols-3 w-full p-0 m-0 pt-[15px] pb-[15px] md:py-0 gap-[15px] md:gap-0">
+        <div className="grid grid-cols-1 md:grid-cols-3 w-full p-0 m-0 md:py-0 gap-[15px] md:gap-0">
           {panels.map((panel, idx) => (
             <Link
               key={panel.id}
