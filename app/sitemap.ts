@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getCategories, getPublishedArticles } from "@/lib/data/supabase";
+import { articlesData } from "@/lib/data/articles";
 import { siteConfig } from "@/lib/config/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -68,7 +69,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.85,
     }));
 
-    articleRoutes = articles.map((article) => {
+    const articleMap = new Map<string, { slug: string; updatedAtIso?: string | null; publishedAtIso?: string | null; rawUpdatedAt?: string | null; rawPublishedAt?: string | null }>();
+    for (const a of articles) {
+      articleMap.set(a.slug.toLowerCase(), a);
+    }
+    for (const a of articlesData) {
+      if (!articleMap.has(a.slug.toLowerCase())) {
+        articleMap.set(a.slug.toLowerCase(), a);
+      }
+    }
+
+    articleRoutes = Array.from(articleMap.values()).map((article) => {
       const dateStr =
         article.updatedAtIso ||
         article.publishedAtIso ||
