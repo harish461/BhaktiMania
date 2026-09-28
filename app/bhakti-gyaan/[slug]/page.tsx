@@ -5,7 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { InArticleAd } from "@/components/ads/InArticleAd";
 import { AffiliateDisclosure } from "@/components/affiliate/AffiliateDisclosure";
-import type { Article } from "@/lib/data/articles";
+import { Article, articlesData } from "@/lib/data/articles";
 import {
   getPublishedArticles,
   getPublishedArticleBySlug,
@@ -14,6 +14,33 @@ import {
 import { Badge, BadgeVariant } from "@/components/ui/Badge";
 import { Divider } from "@/components/ui/Divider";
 import { siteConfig, getCanonicalUrl } from "@/lib/config/site";
+function getSiteBaseUrl(): string {
+  if (siteConfig.url && siteConfig.url.trim()) {
+    return siteConfig.url.replace(/\/$/, "");
+  }
+  return "https://bhaktimania.com";
+}
+
+function resolveAbsoluteUrl(pathOrUrl?: string | null): string {
+  if (!pathOrUrl || !pathOrUrl.trim()) {
+    return `${getSiteBaseUrl()}/images/og-default.webp`;
+  }
+  const clean = pathOrUrl.trim();
+  if (clean.startsWith("http://") || clean.startsWith("https://")) {
+    return clean;
+  }
+  const cleanPath = clean.startsWith("/") ? clean : `/${clean}`;
+  return `${getSiteBaseUrl()}${cleanPath}`;
+}
+
+function toSafeIsoDate(dateInput?: string | Date | null): string | undefined {
+  if (!dateInput) return undefined;
+  if (dateInput instanceof Date) {
+    return isNaN(dateInput.getTime()) ? undefined : dateInput.toISOString();
+  }
+  const parsed = new Date(dateInput);
+  return isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
+}
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -36,18 +63,40 @@ const categoryBadgeMap: Record<string, BadgeVariant> = {
 export async function generateStaticParams() {
   try {
     const articles = await getPublishedArticles();
-    return articles.map((article) => ({
-      slug: article.slug,
-    }));
+    const slugs = new Set(articles.map((article) => article.slug));
+    const all = [...articles.map((article) => ({ slug: article.slug }))];
+    for (const a of articlesData) {
+      if (!slugs.has(a.slug)) {
+        all.push({ slug: a.slug });
+      }
+    }
+    return all;
   } catch (err: unknown) {
     console.error("[bhakti-gyaan/[slug]] Error generating static params:", err);
-    return [];
+    return articlesData.map((a) => ({ slug: a.slug }));
   }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = await getPublishedArticleBySlug(slug);
+  let article = await getPublishedArticleBySlug(slug);
+
+  if (!article) {
+    const staticArticle = articlesData.find(
+      (a) => a.slug.toLowerCase() === slug.toLowerCase()
+    );
+    if (staticArticle) {
+      article = {
+        ...staticArticle,
+        id: staticArticle.slug,
+        featured: false,
+        publishedAtIso: staticArticle.publishedAtIso || new Date().toISOString(),
+        updatedAtIso: staticArticle.updatedAtIso || staticArticle.publishedAtIso || new Date().toISOString(),
+        rawPublishedAt: staticArticle.publishedAtIso || null,
+        rawUpdatedAt: staticArticle.updatedAtIso || null,
+      } as unknown as typeof article;
+    }
+  }
 
   if (!article) {
     return {
@@ -57,22 +106,44 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const title = article.seoTitle || article.title;
   const description = article.seoDescription || article.description;
+  const canonicalUrl =
+    getCanonicalUrl(`/bhakti-gyaan/${article.slug}`) ||
+    resolveAbsoluteUrl(`/bhakti-gyaan/${article.slug}`);
+
+  const rawPublished =
+    article.publishedAtIso ||
+    (article as { rawPublishedAt?: string | null }).rawPublishedAt ||
+    article.publishedAt;
+  const rawUpdated =
+    article.updatedAtIso ||
+    (article as { rawUpdatedAt?: string | null }).rawUpdatedAt;
+
+  const isoPublished = toSafeIsoDate(rawPublished);
+  const isoModified = toSafeIsoDate(rawUpdated) || isoPublished;
+  const articleImageUrl = resolveAbsoluteUrl(article.featuredImageUrl);
 
   return {
     title,
     description,
     alternates: {
-      canonical: getCanonicalUrl(`/bhakti-gyaan/${article.slug}`),
+      canonical: canonicalUrl,
     },
     openGraph: {
       title: `${title} | BhaktiMania`,
       description,
+      url: canonicalUrl,
       type: "article",
       locale: siteConfig.locale,
       siteName: siteConfig.name,
+      ...(isoPublished ? { publishedTime: isoPublished } : {}),
+      ...(isoModified ? { modifiedTime: isoModified } : {}),
+      authors: [article.author || siteConfig.name],
+      section: article.category,
       images: [
         {
-          url: article.featuredImageUrl || "https://bhaktimania.com/images/og-default.webp",
+          url: articleImageUrl,
+          width: 1200,
+          height: 630,
           alt: article.featuredImageAlt || title,
         },
       ],
@@ -81,7 +152,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: "summary_large_image",
       title: `${title} | BhaktiMania`,
       description,
-      images: [article.featuredImageUrl || "https://bhaktimania.com/images/og-default.webp"],
+      images: [articleImageUrl],
     },
   };
 }
@@ -153,30 +224,82 @@ function renderFormattedInline(content: string): React.ReactNode {
 
 export default async function ArticleDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const article = await getPublishedArticleBySlug(slug);
+  let article = await getPublishedArticleBySlug(slug);
+
+  if (!article) {
+    const staticArticle = articlesData.find(
+      (a) => a.slug.toLowerCase() === slug.toLowerCase()
+    );
+    if (staticArticle) {
+      article = {
+        ...staticArticle,
+        id: staticArticle.slug,
+        featured: false,
+        publishedAtIso: staticArticle.publishedAtIso || new Date().toISOString(),
+        updatedAtIso: staticArticle.updatedAtIso || staticArticle.publishedAtIso || new Date().toISOString(),
+        rawPublishedAt: staticArticle.publishedAtIso || null,
+        rawUpdatedAt: staticArticle.updatedAtIso || null,
+      } as unknown as typeof article;
+    }
+  }
 
   if (!article) {
     notFound();
   }
 
-  // Related articles resolved via Supabase data access layer
-  const relatedArticles: Article[] = await getRelatedArticles(
-    article.slug,
-    article.categorySlug,
-    3
-  );
+  // Related articles resolved via Supabase data access layer with local fallback
+  let relatedArticles: Article[] = [];
+  try {
+    relatedArticles = await getRelatedArticles(
+      article.slug,
+      article.categorySlug,
+      3
+    );
+  } catch (err) {
+    console.error(err);
+  }
+
+  if (relatedArticles.length < 3) {
+    const seen = new Set(relatedArticles.map((a) => a.slug));
+    seen.add(article.slug);
+    const categoryMatches = articlesData.filter(
+      (a) => a.categorySlug === article.categorySlug && !seen.has(a.slug)
+    );
+    for (const a of categoryMatches) {
+      relatedArticles.push(a);
+      seen.add(a.slug);
+      if (relatedArticles.length >= 3) break;
+    }
+    if (relatedArticles.length < 3) {
+      for (const a of articlesData) {
+        if (!seen.has(a.slug)) {
+          relatedArticles.push(a);
+          seen.add(a.slug);
+          if (relatedArticles.length >= 3) break;
+        }
+      }
+    }
+  }
 
   const badgeVariant = categoryBadgeMap[article.categorySlug] || "maroon";
 
+  const siteBase = getSiteBaseUrl();
   const pageUrl =
     getCanonicalUrl(`/bhakti-gyaan/${article.slug}`) ||
-    `https://bhaktimania.com/bhakti-gyaan/${article.slug}`;
+    resolveAbsoluteUrl(`/bhakti-gyaan/${article.slug}`);
 
-  const articleImageUrl = article.featuredImageUrl
-    ? (article.featuredImageUrl.startsWith("http")
-        ? article.featuredImageUrl
-        : `https://bhaktimania.com${article.featuredImageUrl.startsWith("/") ? "" : "/"}${article.featuredImageUrl}`)
-    : "https://bhaktimania.com/images/og-default.webp";
+  const articleImageUrl = resolveAbsoluteUrl(article.featuredImageUrl);
+
+  const rawPublished =
+    article.publishedAtIso ||
+    (article as { rawPublishedAt?: string | null }).rawPublishedAt ||
+    article.publishedAt;
+  const rawUpdated =
+    article.updatedAtIso ||
+    (article as { rawUpdatedAt?: string | null }).rawUpdatedAt;
+
+  const datePublished = toSafeIsoDate(rawPublished);
+  const dateModified = toSafeIsoDate(rawUpdated) || datePublished;
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -186,13 +309,13 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         "@type": "ListItem",
         position: 1,
         name: "होम",
-        item: getCanonicalUrl("/") || "https://bhaktimania.com/",
+        item: getCanonicalUrl("/") || `${siteBase}/`,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "भक्ति ज्ञान",
-        item: getCanonicalUrl("/bhakti-gyaan") || "https://bhaktimania.com/bhakti-gyaan",
+        item: getCanonicalUrl("/bhakti-gyaan") || `${siteBase}/bhakti-gyaan`,
       },
       {
         "@type": "ListItem",
@@ -207,7 +330,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: article.title,
-    description: article.description,
+    description: article.seoDescription || article.description,
     inLanguage: "hi",
     mainEntityOfPage: {
       "@type": "WebPage",
@@ -217,19 +340,19 @@ export default async function ArticleDetailPage({ params }: PageProps) {
     publisher: {
       "@type": "Organization",
       name: siteConfig.name,
+      url: siteBase,
       logo: {
         "@type": "ImageObject",
-        url: "https://bhaktimania.com/images/og-default.webp",
+        url: `${siteBase}/images/bhaktimania-logo.jpg`,
       },
     },
     author: {
       "@type": "Organization",
       name: article.author || siteConfig.name,
+      url: siteBase,
     },
-    ...(article.publishedAtIso ? { datePublished: article.publishedAtIso } : {}),
-    ...(article.updatedAtIso || article.publishedAtIso
-      ? { dateModified: article.updatedAtIso || article.publishedAtIso }
-      : {}),
+    ...(datePublished ? { datePublished } : {}),
+    ...(dateModified ? { dateModified } : {}),
   };
 
   return (
@@ -418,6 +541,39 @@ export default async function ArticleDetailPage({ params }: PageProps) {
 
           {/* Reader Transparency Disclosure */}
           <AffiliateDisclosure className="mt-8" />
+
+          {/* Category Reading CTA (Near end of article, before related articles) */}
+          <div className="mt-10 p-6 sm:p-8 rounded-2xl bg-[#F8F4EC] border border-[#6B1724]/12 text-center shadow-xs">
+            <div
+              className="w-10 h-10 rounded-full bg-white border border-[#6B1724]/12 flex items-center justify-center text-[#6B1724] mx-auto mb-3 shadow-xs"
+              aria-hidden="true"
+            >
+              <span className="font-heading text-base select-none">✦</span>
+            </div>
+            <h3 className="font-heading text-xl sm:text-2xl text-[#6B1724] mb-2">
+              {article.categorySlug === "bhakti-vichar"
+                ? "ऐसे ही भक्ति विचार पढ़ते रहें"
+                : `ऐसे ही ${article.category} के लेख पढ़ते रहें`}
+            </h3>
+            <p className="text-sm sm:text-base text-[#5A6065] font-body leading-relaxed max-w-lg mx-auto mb-5">
+              {article.categorySlug === "bhakti-vichar"
+                ? "मन को शांति, भक्ति और सकारात्मक चिंतन से जोड़ने वाले ऐसे ही विचार BhaktiMania पर पढ़ें।"
+                : `सनातन धर्म, भक्ति और आध्यात्मिक ज्ञान से जुड़े ऐसे ही विचार BhaktiMania पर पढ़ें।`}
+            </p>
+            <Link
+              href={`/${article.categorySlug}`}
+              className="inline-flex items-center justify-center min-h-[44px] px-6 py-2.5 rounded-xl bg-[#6B1724] hover:bg-[#52111C] text-white font-medium text-sm sm:text-base shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B1724] focus-visible:ring-offset-2"
+            >
+              <span>
+                {article.categorySlug === "bhakti-vichar"
+                  ? "और भक्ति विचार पढ़ें"
+                  : `और ${article.category} के लेख पढ़ें`}
+              </span>
+              <span className="ml-1.5" aria-hidden="true">
+                →
+              </span>
+            </Link>
+          </div>
 
           {/* Article Footer & Back Link */}
           <Divider variant="ornamental" className="my-10" />
