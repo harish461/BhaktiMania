@@ -1,6 +1,19 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { Article, articlesData } from "@/lib/data/articles";
 import { mapDatabaseArticleToArticle } from "./adapters";
 import type { DatabaseArticleWithRelations, SupabaseArticle } from "./types";
+
+function mapStaticArticleToSupabase(article: Article): SupabaseArticle {
+  return {
+    ...article,
+    id: article.slug,
+    featured: false,
+    publishedAtIso: article.publishedAtIso || new Date().toISOString(),
+    updatedAtIso: article.updatedAtIso || article.publishedAtIso || new Date().toISOString(),
+    rawPublishedAt: article.publishedAtIso || null,
+    rawUpdatedAt: article.updatedAtIso || null,
+  };
+}
 
 /**
  * Standard PostgreSQL/PostgREST SELECT statement for articles with joined relations.
@@ -44,6 +57,10 @@ const ARTICLE_SELECT_FIELDS = `
  *   published_at DESC
  */
 export async function getPublishedArticles(): Promise<SupabaseArticle[]> {
+  if (!isSupabaseConfigured()) {
+    return articlesData.map(mapStaticArticleToSupabase);
+  }
+
   const supabase = await createClient();
   const nowIso = new Date().toISOString();
 
@@ -87,6 +104,11 @@ export async function getPublishedArticleBySlug(
   }
 
   const cleanSlug = slug.trim().toLowerCase();
+
+  if (!isSupabaseConfigured()) {
+    const found = articlesData.find((a) => a.slug.toLowerCase() === cleanSlug);
+    return found ? mapStaticArticleToSupabase(found) : null;
+  }
   const supabase = await createClient();
   const nowIso = new Date().toISOString();
 
@@ -131,6 +153,12 @@ export async function getArticlesByCategory(
   }
 
   const cleanCategorySlug = categorySlug.trim().toLowerCase();
+
+  if (!isSupabaseConfigured()) {
+    return articlesData
+      .filter((a) => a.categorySlug.toLowerCase() === cleanCategorySlug)
+      .map(mapStaticArticleToSupabase);
+  }
   const supabase = await createClient();
   const nowIso = new Date().toISOString();
 
@@ -183,6 +211,22 @@ export async function getRelatedArticles(
 
   const cleanSlug = currentSlug.trim().toLowerCase();
   const targetLimit = Math.max(1, limit);
+
+  if (!isSupabaseConfigured()) {
+    let resolvedCategory = categorySlug?.trim().toLowerCase();
+    if (!resolvedCategory) {
+      const current = articlesData.find((a) => a.slug.toLowerCase() === cleanSlug);
+      if (current) resolvedCategory = current.categorySlug.toLowerCase();
+    }
+    return articlesData
+      .filter(
+        (a) =>
+          a.slug.toLowerCase() !== cleanSlug &&
+          (!resolvedCategory || a.categorySlug.toLowerCase() === resolvedCategory)
+      )
+      .slice(0, targetLimit)
+      .map(mapStaticArticleToSupabase);
+  }
   const supabase = await createClient();
   const nowIso = new Date().toISOString();
 

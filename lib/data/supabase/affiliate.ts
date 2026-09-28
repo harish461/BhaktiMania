@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import type {
   DatabaseAffiliateProduct,
   DatabaseArticleAffiliateWithProduct,
@@ -67,7 +67,7 @@ const AFFILIATE_PRODUCT_FIELDS = `
 export async function getAffiliateProductsForArticle(
   articleId: string
 ): Promise<AffiliateProductItem[]> {
-  if (!articleId) return [];
+  if (!articleId || !isSupabaseConfigured()) return [];
 
   const supabase = await createClient();
 
@@ -116,7 +116,7 @@ export async function getAffiliateProductsForArticle(
 export async function getAffiliateProductsForArticleSlug(
   slug: string
 ): Promise<AffiliateProductItem[]> {
-  if (!slug) return [];
+  if (!slug || !isSupabaseConfigured()) return [];
 
   const supabase = await createClient();
 
@@ -140,6 +140,8 @@ export async function getAffiliateProductsForArticleSlug(
  * Ordered by display_order ASC, then created_at DESC.
  */
 export async function getAllActiveAffiliateProducts(): Promise<AffiliateProductItem[]> {
+  if (!isSupabaseConfigured()) return [];
+
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -170,6 +172,8 @@ export async function getAllActiveAffiliateProducts(): Promise<AffiliateProductI
 export async function getCuratedAffiliateProducts(
   limit: number = 3
 ): Promise<AffiliateProductItem[]> {
+  if (!isSupabaseConfigured()) return [];
+
   const supabase = await createClient();
 
   const { data, error } = await supabase

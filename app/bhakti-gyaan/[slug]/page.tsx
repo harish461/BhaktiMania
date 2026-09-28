@@ -79,7 +79,12 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  let article = await getPublishedArticleBySlug(slug);
+  let article = null;
+  try {
+    article = await getPublishedArticleBySlug(slug);
+  } catch (err: unknown) {
+    console.error("[bhakti-gyaan/[slug]] Error fetching article in generateMetadata:", err);
+  }
 
   if (!article) {
     const staticArticle = articlesData.find(
@@ -224,7 +229,12 @@ function renderFormattedInline(content: string): React.ReactNode {
 
 export default async function ArticleDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  let article = await getPublishedArticleBySlug(slug);
+  let article = null;
+  try {
+    article = await getPublishedArticleBySlug(slug);
+  } catch (err: unknown) {
+    console.error("[bhakti-gyaan/[slug]] Error fetching article in ArticleDetailPage:", err);
+  }
 
   if (!article) {
     const staticArticle = articlesData.find(

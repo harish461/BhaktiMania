@@ -1,6 +1,16 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { categoriesData, type DevotionalCategory } from "@/lib/data/categories";
 import { mapDatabaseCategoryToCategory } from "./adapters";
 import type { DatabaseCategory, SupabaseCategory } from "./types";
+
+function mapStaticCategory(cat: DevotionalCategory, index: number): SupabaseCategory {
+  return {
+    ...cat,
+    id: cat.slug,
+    sortOrder: index,
+    isActive: true,
+  };
+}
 
 /**
  * Fetches all active devotional categories from Supabase ordered by sort_order.
@@ -8,6 +18,10 @@ import type { DatabaseCategory, SupabaseCategory } from "./types";
  * Visibility: Only records with is_active = true.
  */
 export async function getCategories(): Promise<SupabaseCategory[]> {
+  if (!isSupabaseConfigured()) {
+    return categoriesData.map(mapStaticCategory);
+  }
+
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -45,6 +59,10 @@ export async function getCategories(): Promise<SupabaseCategory[]> {
  * Used by admin article editors to preserve assignments to inactive categories.
  */
 export async function getAllCategoriesForEditor(): Promise<SupabaseCategory[]> {
+  if (!isSupabaseConfigured()) {
+    return categoriesData.map(mapStaticCategory);
+  }
+
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -90,6 +108,12 @@ export async function getCategoryBySlug(
   }
 
   const cleanSlug = slug.trim().toLowerCase();
+
+  if (!isSupabaseConfigured()) {
+    const found = categoriesData.find((c) => c.slug.toLowerCase() === cleanSlug);
+    return found ? mapStaticCategory(found, 0) : null;
+  }
+
   const supabase = await createClient();
 
   const { data, error } = await supabase
